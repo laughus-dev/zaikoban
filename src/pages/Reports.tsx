@@ -1,10 +1,14 @@
 import React, {useState} from 'react';
 import {
     AlertDescription,
+    AlertRoot,
     AlertTitle,
     Badge,
     Box,
     Button,
+    CardBody,
+    CardHeader,
+    CardRoot,
     createToaster,
     Flex,
     Heading,
@@ -13,14 +17,19 @@ import {
     IconButton,
     NativeSelectField,
     NativeSelectRoot,
+    ProgressRoot,
+    ProgressValueText,
+    Separator,
     SimpleGrid,
-    StatDownTrend,
     StatHelpText,
     StatLabel,
     StatRoot,
-    StatUpTrend,
     StatValueText,
-    TabList,
+    Table,
+    TabsContent,
+    TabsList,
+    TabsRoot,
+    TabsTrigger,
     Text,
     TooltipContent,
     TooltipPositioner,
@@ -201,7 +210,7 @@ export const Reports: React.FC = () => {
                             {formatCurrency(4200000)}
                         </StatValueText>
                         <StatHelpText>
-                            <StatUpTrend/>
+                            <Icon as={FiTrendingUp} color="green.500" mr={1}/>
                             前月比 10.5%
                         </StatHelpText>
                     </StatRoot>
@@ -214,7 +223,7 @@ export const Reports: React.FC = () => {
                             9.5回
                         </StatValueText>
                         <StatHelpText>
-                            <StatDownTrend/>
+                            <Icon as={FiActivity} color="red.500" mr={1}/>
                             目標まであと2.5回
                         </StatHelpText>
                     </StatRoot>
@@ -239,7 +248,7 @@ export const Reports: React.FC = () => {
                             2.3%
                         </StatValueText>
                         <StatHelpText>
-                            <StatUpTrend/>
+                            <Icon as={FiTrendingUp} color="red.500"/>
                             要改善
                         </StatHelpText>
                     </StatRoot>
@@ -247,17 +256,15 @@ export const Reports: React.FC = () => {
         </SimpleGrid>
 
         {/* メインコンテンツ */}
-        <Tabs colorScheme="orange" variant="enclosed">
-          <TabList>
-            <Tab><Icon as={FiTrendingUp} mr={2} />売上分析</Tab>
-            <Tab><Icon as={FiPackage} mr={2} />在庫分析</Tab>
-            <Tab><Icon as={FiAward} mr={2} />商品ランキング</Tab>
-            <Tab><Icon as={FiTarget} mr={2} />改善提案</Tab>
-          </TabList>
-
-          <TabPanels>
+            <TabsRoot colorScheme="orange" variant="enclosed">
+                <TabsList>
+                    <TabsTrigger value="sales"><Icon as={FiTrendingUp} mr={2}/>売上分析</TabsTrigger>
+                    <TabsTrigger value="inventory"><Icon as={FiPackage} mr={2}/>在庫分析</TabsTrigger>
+                    <TabsTrigger value="ranking"><Icon as={FiAward} mr={2}/>商品ランキング</TabsTrigger>
+                    <TabsTrigger value="improvement"><Icon as={FiTarget} mr={2}/>改善提案</TabsTrigger>
+                </TabsList>
             {/* 売上分析タブ */}
-            <TabPanel>
+                <TabsContent value="sales">
                 <VStack gap={6} align="stretch">
                     <Box bg={bgColor} borderWidth={1} borderColor={borderColor} borderRadius="lg">
                         <Box p={6} borderBottomWidth={1} borderColor={borderColor}>
@@ -320,35 +327,41 @@ export const Reports: React.FC = () => {
                             <Text fontWeight="bold">今月</Text>
                             <Text color="green.500" fontWeight="bold">105%</Text>
                           </Flex>
-                          <Progress value={105} colorScheme="green" size="lg" borderRadius="full" />
+                            <ProgressRoot value={105} colorPalette="green" size="lg">
+                                <ProgressValueText/>
+                            </ProgressRoot>
                         </Box>
                         <Box>
                           <Flex justify="space-between" mb={2}>
                             <Text fontWeight="bold">四半期</Text>
                             <Text color="orange.500" fontWeight="bold">92%</Text>
                           </Flex>
-                          <Progress value={92} colorScheme="orange" size="lg" borderRadius="full" />
+                            <ProgressRoot value={92} colorPalette="orange" size="lg">
+                                <ProgressValueText/>
+                            </ProgressRoot>
                         </Box>
                         <Box>
                           <Flex justify="space-between" mb={2}>
                             <Text fontWeight="bold">年間</Text>
                             <Text color="blue.500" fontWeight="bold">78%</Text>
                           </Flex>
-                          <Progress value={78} colorScheme="blue" size="lg" borderRadius="full" />
+                            <ProgressRoot value={78} colorPalette="blue" size="lg">
+                                <ProgressValueText/>
+                            </ProgressRoot>
                         </Box>
                       </VStack>
                             </Box>
                         </Box>
                 </SimpleGrid>
               </VStack>
-            </TabPanel>
+                </TabsContent>
 
             {/* 在庫分析タブ */}
-            <TabPanel>
+                <TabsContent value="inventory">
                 <VStack gap={6} align="stretch">
                     <SimpleGrid columns={{base: 1, lg: 3}} gap={6}>
                   {inventoryEfficiency.map((item) => (
-                    <Card key={item.category} bg={bgColor}>
+                      <CardRoot key={item.category} bg={bgColor}>
                       <CardBody>
                           <VStack gap={4}>
                           <Icon 
@@ -360,21 +373,22 @@ export const Reports: React.FC = () => {
                           <Text fontSize="3xl" fontWeight="bold" color={`${item.color}.500`}>
                             {item.count}品目
                           </Text>
-                          <Progress 
-                            value={item.percentage} 
-                            colorScheme={item.color} 
+                              <ProgressRoot
+                            value={item.percentage}
+                            colorPalette={item.color} 
                             size="sm" 
                             width="100%"
-                            borderRadius="full"
-                          />
+                              >
+                                  <ProgressValueText/>
+                              </ProgressRoot>
                           <Text color="gray.600">{item.percentage}%</Text>
                         </VStack>
                       </CardBody>
-                    </Card>
+                      </CardRoot>
                   ))}
                 </SimpleGrid>
 
-                <Card bg={bgColor}>
+                    <CardRoot bg={bgColor}>
                   <CardHeader>
                     <Heading size="md">在庫回転率</Heading>
                     <Text color="gray.600" fontSize="sm">目標値との比較</Text>
@@ -424,10 +438,9 @@ export const Reports: React.FC = () => {
                       </VStack>
                     </HStack>
                   </CardBody>
-                </Card>
+                    </CardRoot>
 
-                <Alert status="info" borderRadius="lg">
-                  <AlertIcon />
+                    <AlertRoot status="info" borderRadius="lg">
                   <Box>
                     <AlertTitle>在庫状況の評価</AlertTitle>
                     <AlertDescription>
@@ -435,46 +448,46 @@ export const Reports: React.FC = () => {
                       過剰在庫の商品を優先的に販売促進することをお勧めします。
                     </AlertDescription>
                   </Box>
-                </Alert>
+                    </AlertRoot>
               </VStack>
-            </TabPanel>
+                </TabsContent>
 
             {/* 商品ランキングタブ */}
-            <TabPanel>
+                <TabsContent value="ranking">
                 <VStack gap={6} align="stretch">
-                <Card bg={bgColor}>
+                    <CardRoot bg={bgColor}>
                   <CardHeader>
                     <Heading size="md">売上TOP5商品</Heading>
                     <Text color="gray.600" fontSize="sm">今月の人気商品</Text>
                   </CardHeader>
                   <CardBody>
-                    <TableContainer>
-                      <Table variant="simple">
-                        <Thead>
-                          <Tr>
-                            <Th>順位</Th>
-                            <Th>商品名</Th>
-                            <Th isNumeric>売上金額</Th>
-                            <Th isNumeric>販売数</Th>
-                            <Th>前月比</Th>
-                          </Tr>
-                        </Thead>
-                        <Tbody>
+                      <Table.ScrollArea>
+                          <Table.Root>
+                              <Table.Header>
+                                  <Table.Row>
+                                      <Table.ColumnHeader>順位</Table.ColumnHeader>
+                                      <Table.ColumnHeader>商品名</Table.ColumnHeader>
+                                      <Table.ColumnHeader textAlign="end">売上金額</Table.ColumnHeader>
+                                      <Table.ColumnHeader textAlign="end">販売数</Table.ColumnHeader>
+                                      <Table.ColumnHeader>前月比</Table.ColumnHeader>
+                                  </Table.Row>
+                              </Table.Header>
+                              <Table.Body>
                           {topProducts.map((product) => (
-                            <Tr key={product.rank}>
-                              <Td>
+                              <Table.Row key={product.rank}>
+                                  <Table.Cell>
                                 <Text fontSize="xl">{getRankIcon(product.rank)}</Text>
-                              </Td>
-                              <Td>
+                                  </Table.Cell>
+                                  <Table.Cell>
                                 <Text fontWeight="bold">{product.name}</Text>
-                              </Td>
-                              <Td isNumeric>
+                                  </Table.Cell>
+                                  <Table.Cell textAlign="end">
                                 <Text fontWeight="bold" color="orange.500">
                                   {formatCurrency(product.sales)}
                                 </Text>
-                              </Td>
-                              <Td isNumeric>{product.quantity}個</Td>
-                              <Td>
+                                  </Table.Cell>
+                                  <Table.Cell textAlign="end">{product.quantity}個</Table.Cell>
+                                  <Table.Cell>
                                 <HStack>
                                   <Icon 
                                     as={product.trend === 'up' ? FiTrendingUp : FiActivity} 
@@ -487,17 +500,17 @@ export const Reports: React.FC = () => {
                                     {product.growth > 0 ? '+' : ''}{product.growth}%
                                   </Text>
                                 </HStack>
-                              </Td>
-                            </Tr>
+                                  </Table.Cell>
+                              </Table.Row>
                           ))}
-                        </Tbody>
-                      </Table>
-                    </TableContainer>
+                              </Table.Body>
+                          </Table.Root>
+                      </Table.ScrollArea>
                   </CardBody>
-                </Card>
+                    </CardRoot>
 
                     <SimpleGrid columns={{base: 1, lg: 2}} gap={6}>
-                  <Card bg={bgColor}>
+                        <CardRoot bg={bgColor}>
                     <CardHeader>
                       <Heading size="md">急上昇商品 🔥</Heading>
                     </CardHeader>
@@ -520,9 +533,9 @@ export const Reports: React.FC = () => {
                         </HStack>
                       </VStack>
                     </CardBody>
-                  </Card>
+                        </CardRoot>
 
-                  <Card bg={bgColor}>
+                        <CardRoot bg={bgColor}>
                     <CardHeader>
                       <Heading size="md">要注意商品 ⚠️</Heading>
                     </CardHeader>
@@ -542,26 +555,25 @@ export const Reports: React.FC = () => {
                         </HStack>
                       </VStack>
                     </CardBody>
-                  </Card>
+                        </CardRoot>
                 </SimpleGrid>
               </VStack>
-            </TabPanel>
+                </TabsContent>
 
             {/* 改善提案タブ */}
-            <TabPanel>
+                <TabsContent value="improvement">
                 <VStack gap={6} align="stretch">
-                <Alert status="success" borderRadius="lg">
-                  <AlertIcon />
+                    <AlertRoot status="success" borderRadius="lg">
                   <Box>
                     <AlertTitle>AI分析による改善提案</AlertTitle>
                     <AlertDescription>
                       過去のデータを基に、以下の改善点をご提案します
                     </AlertDescription>
                   </Box>
-                </Alert>
+                    </AlertRoot>
 
                     <SimpleGrid columns={{base: 1, lg: 2}} gap={6}>
-                  <Card bg={bgColor} borderColor="orange.200" borderWidth={2}>
+                        <CardRoot bg={bgColor} borderColor="orange.200" borderWidth={2}>
                     <CardHeader bg="orange.50">
                       <HStack>
                         <Icon as={FiShoppingBag} color="orange.500" fontSize="xl" />
@@ -574,19 +586,20 @@ export const Reports: React.FC = () => {
                         <Text color="gray.600" fontSize="sm">
                           鮮度を保ちながら廃棄ロスを20%削減できます
                         </Text>
-                        <Divider />
+                            <Separator/>
                         <Text>📌 <strong>調味料</strong>はまとめ買いがお得です</Text>
                         <Text color="gray.600" fontSize="sm">
                           月1回の大量発注で仕入れコストを15%削減
                         </Text>
-                        <Button colorScheme="orange" size="sm" rightIcon={<FiChevronRight />}>
+                            <Button colorScheme="orange" size="sm">
                           詳細を見る
+                                <FiChevronRight/>
                         </Button>
                       </VStack>
                     </CardBody>
-                  </Card>
+                        </CardRoot>
 
-                  <Card bg={bgColor} borderColor="green.200" borderWidth={2}>
+                        <CardRoot bg={bgColor} borderColor="green.200" borderWidth={2}>
                     <CardHeader bg="green.50">
                       <HStack>
                         <Icon as={FiDollarSign} color="green.500" fontSize="xl" />
@@ -599,19 +612,20 @@ export const Reports: React.FC = () => {
                         <Text color="gray.600" fontSize="sm">
                           人気商品の組み合わせで客単価を25%アップ
                         </Text>
-                        <Divider />
+                            <Separator/>
                         <Text>💡 <strong>季節商品</strong>の早期仕入れ</Text>
                         <Text color="gray.600" fontSize="sm">
                           トレンドを先取りして売上30%増の可能性
                         </Text>
-                        <Button colorScheme="green" size="sm" rightIcon={<FiChevronRight />}>
+                            <Button colorScheme="green" size="sm">
                           詳細を見る
+                                <FiChevronRight/>
                         </Button>
                       </VStack>
                     </CardBody>
-                  </Card>
+                        </CardRoot>
 
-                  <Card bg={bgColor} borderColor="blue.200" borderWidth={2}>
+                        <CardRoot bg={bgColor} borderColor="blue.200" borderWidth={2}>
                     <CardHeader bg="blue.50">
                       <HStack>
                         <Icon as={FiActivity} color="blue.500" fontSize="xl" />
@@ -624,19 +638,20 @@ export const Reports: React.FC = () => {
                         <Text color="gray.600" fontSize="sm">
                           売れ筋商品に在庫を集中させて効率化
                         </Text>
-                        <Divider />
+                            <Separator/>
                         <Text>🎯 <strong>リードタイム</strong>の見直し</Text>
                         <Text color="gray.600" fontSize="sm">
                           仕入先との調整で在庫保持日数を3日短縮
                         </Text>
-                        <Button colorScheme="blue" size="sm" rightIcon={<FiChevronRight />}>
+                            <Button colorScheme="blue" size="sm">
                           詳細を見る
+                                <FiChevronRight/>
                         </Button>
                       </VStack>
                     </CardBody>
-                  </Card>
+                        </CardRoot>
 
-                  <Card bg={bgColor} borderColor="purple.200" borderWidth={2}>
+                        <CardRoot bg={bgColor} borderColor="purple.200" borderWidth={2}>
                     <CardHeader bg="purple.50">
                       <HStack>
                         <Icon as={FiAlertCircle} color="purple.500" fontSize="xl" />
@@ -649,20 +664,21 @@ export const Reports: React.FC = () => {
                         <Text color="gray.600" fontSize="sm">
                           アラート設定で廃棄ロスを50%削減可能
                         </Text>
-                        <Divider />
+                            <Separator/>
                         <Text>⚠️ <strong>安全在庫</strong>の見直し</Text>
                         <Text color="gray.600" fontSize="sm">
                           需要予測の精度向上で欠品リスクを軽減
                         </Text>
-                        <Button colorScheme="purple" size="sm" rightIcon={<FiChevronRight />}>
+                            <Button colorScheme="purple" size="sm">
                           詳細を見る
+                                <FiChevronRight/>
                         </Button>
                       </VStack>
                     </CardBody>
-                  </Card>
+                        </CardRoot>
                 </SimpleGrid>
 
-                <Card bg="blue.50" borderColor="blue.300" borderWidth={2}>
+                    <CardRoot bg="blue.50" borderColor="blue.300" borderWidth={2}>
                   <CardBody>
                       <HStack gap={4}>
                       <Icon as={FiInfo} color="blue.500" fontSize="3xl" />
@@ -679,11 +695,10 @@ export const Reports: React.FC = () => {
                       </Button>
                     </HStack>
                   </CardBody>
-                </Card>
+                    </CardRoot>
               </VStack>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+                </TabsContent>
+            </TabsRoot>
       </VStack>
     </Box>
   );

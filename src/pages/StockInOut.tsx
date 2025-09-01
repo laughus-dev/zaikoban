@@ -240,7 +240,7 @@ export const StockInOut: React.FC = () => {
 
         <TabsRoot
             value={transactionType === 'in' ? 'in' : 'out'}
-            onValueChange={(details: any) => setTransactionType(details.value as 'in' | 'out')}
+            onValueChange={(details: { value: string }) => setTransactionType(details.value as 'in' | 'out')}
             colorPalette="primary"
         >
             <TabsList>
@@ -264,11 +264,12 @@ export const StockInOut: React.FC = () => {
                             <VStack gap={4} align="stretch">
                                 <Field.Root>
                                     <Field.Label>仕入先</Field.Label>
-                                    <NativeSelect.Root
-                                        value={selectedSupplierId}
-                                        onValueChange={(details: any) => setSelectedSupplierId(details.value)}
-                                    >
-                                        <NativeSelect.Field placeholder="仕入先を選択"/>
+                                    <NativeSelect.Root>
+                                        <NativeSelect.Field
+                                            placeholder="仕入先を選択"
+                                            value={selectedSupplierId}
+                                            onChange={(e) => setSelectedSupplierId(e.target.value)}
+                                        />
                                         {mockSuppliers.map((supplier) => (
                                             <option key={supplier.id} value={supplier.id}>
                                                 {supplier.name}
@@ -280,11 +281,12 @@ export const StockInOut: React.FC = () => {
                                 <SimpleGrid columns={{base: 1, md: 2, lg: 4}} gap={4}>
                                     <Field.Root>
                                         <Field.Label>商品 *</Field.Label>
-                                        <NativeSelect.Root
-                                            value={selectedProductId}
-                                            onValueChange={(details: any) => setSelectedProductId(details.value)}
-                                        >
-                                            <NativeSelect.Field placeholder="商品を選択"/>
+                                        <NativeSelect.Root>
+                                            <NativeSelect.Field
+                                                placeholder="商品を選択"
+                                                value={selectedProductId}
+                                                onChange={(e) => setSelectedProductId(e.target.value)}
+                                            />
                                             {mockProducts.map((product) => (
                                                 <option key={product.id} value={product.id}>
                                                     {product.name}
@@ -344,7 +346,7 @@ export const StockInOut: React.FC = () => {
                       label="商品"
                       name="productId"
                       value={selectedProductId}
-                      onChange={setSelectedProductId}
+                      onChange={(value) => setSelectedProductId(String(value))}
                       options={productOptions}
                       placeholder="商品を選択"
                       isRequired
@@ -354,18 +356,19 @@ export const StockInOut: React.FC = () => {
                       label="数量"
                       name="quantity"
                       value={quantity}
-                      onChange={setQuantity}
+                      onChange={(value) => setQuantity(Number(value))}
                       min={0}
                       step={0.1}
                       isRequired
                     />
                                     <Field.Root>
                                         <Field.Label>理由</Field.Label>
-                        <NativeSelect.Root
-                        value={note}
-                        onValueChange={(details: any) => setNote(details.value)}
-                      >
-                            <NativeSelect.Field placeholder="理由を選択">
+                                        <NativeSelect.Root>
+                                            <NativeSelect.Field
+                                                placeholder="理由を選択"
+                                                value={note}
+                                                onChange={(e) => setNote(e.target.value)}
+                                            >
                         <option value="料理使用">料理使用</option>
                         <option value="販売">販売</option>
                         <option value="サンプル">サンプル</option>

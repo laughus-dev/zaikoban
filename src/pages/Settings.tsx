@@ -1,78 +1,70 @@
 import React, {useState} from 'react';
 import {
-    Alert,
     AlertDescription,
-    AlertIcon,
+    AlertRoot,
     AlertTitle,
-    Avatar,
+    AvatarRoot,
     Badge,
     Box,
     Button,
-    Card,
     CardBody,
     CardHeader,
+    CardRoot,
     Center,
-    Divider,
-    FormControl,
-    FormLabel,
+    createToaster,
+    DialogBody,
+    DialogCloseTrigger,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogRoot,
+    FieldLabel,
+    FieldRoot,
     Heading,
     HStack,
     Icon,
     IconButton,
     Input,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    Radio,
-    RadioGroup,
-    Select,
+    NativeSelectField,
+    NativeSelectRoot,
+    Separator,
     SimpleGrid,
-    Slider,
-    SliderFilledTrack,
-    SliderMark,
+    SliderMarker,
+    SliderRange,
+    SliderRoot,
     SliderThumb,
     SliderTrack,
     Stack,
-    Switch,
-    Tab,
+    SwitchRoot,
+    SwitchThumb,
     Table,
-    TableContainer,
-    TabList,
-    TabPanel,
-    TabPanels,
-    Tabs,
-    Tbody,
-    Td,
+    TabsContent,
+    TabsList,
+    TabsRoot,
+    TabsTrigger,
     Text,
-    Th,
-    Thead,
-    Tooltip,
-    Tr,
-    useColorModeValue,
-    useDisclosure,
-    useToast,
+    TooltipContent,
+    TooltipRoot,
+    TooltipTrigger,
     VStack,
 } from '@chakra-ui/react';
 import {
     FiBell,
     FiCamera,
+    FiChevronRight,
     FiClock,
     FiDatabase,
     FiDownload,
     FiEdit2,
     FiGlobe,
     FiHelpCircle,
+    FiInfo,
     FiLock,
     FiMail,
     FiMapPin,
     FiMonitor,
     FiMoon,
     FiPackage,
-    FiPalette,
     FiPlus,
     FiRefreshCw,
     FiSave,
@@ -128,24 +120,29 @@ export const Settings: React.FC = () => {
     systemUpdate: true,
   });
 
-  const toast = useToast();
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const { isOpen, onOpen, onClose } = useDisclosure();
+    const toast = createToaster({
+        placement: 'top',
+    });
+    const bgColor = 'white'; // useColorModeValue('white', 'gray.800');
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [modalType, setModalType] = useState('');
 
   const handleSave = (section: string) => {
-    toast({
+      toast.create({
       title: '設定を保存しました',
       description: `${section}の設定が正常に保存されました`,
       duration: 3000,
-      isClosable: true,
-      position: 'top-right',
     });
   };
 
   const handleModalOpen = (type: string) => {
     setModalType(type);
-    onOpen();
+      setIsDialogOpen(true);
+  };
+
+    const handleModalClose = () => {
+        setIsDialogOpen(false);
+        setModalType('');
   };
 
   const getRoleBadgeColor = (role: string) => {
@@ -170,145 +167,148 @@ export const Settings: React.FC = () => {
         </VStack>
 
         {/* タブ */}
-        <Tabs colorScheme="orange" variant="enclosed">
-          <TabList flexWrap="wrap">
-            <Tab><Icon as={FiUser} mr={2} />プロフィール</Tab>
-            <Tab><Icon as={FiMapPin} mr={2} />店舗情報</Tab>
-            <Tab><Icon as={FiPackage} mr={2} />商品設定</Tab>
-            <Tab><Icon as={FiBell} mr={2} />通知設定</Tab>
-            <Tab><Icon as={FiPalette} mr={2} />画面設定</Tab>
-            <Tab><Icon as={FiShield} mr={2} />ユーザー管理</Tab>
-            <Tab><Icon as={FiDatabase} mr={2} />システム</Tab>
-            <Tab><Icon as={FiHelpCircle} mr={2} />ヘルプ</Tab>
-          </TabList>
-
-          <TabPanels>
+            <TabsRoot colorScheme="orange" variant="enclosed">
+                <TabsList flexWrap="wrap">
+                    <TabsTrigger value="profile"><Icon as={FiUser} mr={2}/>プロフィール</TabsTrigger>
+                    <TabsTrigger value="store"><Icon as={FiMapPin} mr={2}/>店舗情報</TabsTrigger>
+                    <TabsTrigger value="products"><Icon as={FiPackage} mr={2}/>商品設定</TabsTrigger>
+                    <TabsTrigger value="notifications"><Icon as={FiBell} mr={2}/>通知設定</TabsTrigger>
+                    <TabsTrigger value="appearance"><Icon as={FiMonitor} mr={2}/>画面設定</TabsTrigger>
+                    <TabsTrigger value="users"><Icon as={FiShield} mr={2}/>ユーザー管理</TabsTrigger>
+                    <TabsTrigger value="system"><Icon as={FiDatabase} mr={2}/>システム</TabsTrigger>
+                    <TabsTrigger value="help"><Icon as={FiHelpCircle} mr={2}/>ヘルプ</TabsTrigger>
+                </TabsList>
             {/* プロフィール設定 */}
-            <TabPanel>
-              <Card bg={bgColor}>
+                <TabsContent value="profile">
+                    <CardRoot bg={bgColor}>
                 <CardBody>
                     <VStack gap={6} align="stretch">
                     <Center>
                         <VStack gap={4}>
-                        <Avatar size="2xl" name="田中 太郎" bg="orange.500" />
-                        <Button leftIcon={<FiCamera />} size="sm" colorScheme="orange" variant="outline">
+                            <AvatarRoot size="2xl" bg="orange.500">田中 太郎</AvatarRoot>
+                            <Button size="sm" colorScheme="orange" variant="outline">
+                                <FiCamera/>
                           写真を変更
                         </Button>
                       </VStack>
                     </Center>
 
                         <SimpleGrid columns={{base: 1, md: 2}} gap={4}>
-                      <FormControl>
-                        <FormLabel>名前</FormLabel>
+                            <FieldRoot>
+                                <FieldLabel>名前</FieldLabel>
                         <Input defaultValue="田中 太郎" />
-                      </FormControl>
-                      
-                      <FormControl>
-                        <FormLabel>メールアドレス</FormLabel>
+                            </FieldRoot>
+
+                            <FieldRoot>
+                                <FieldLabel>メールアドレス</FieldLabel>
                         <Input type="email" defaultValue="tanaka@zaikoban.jp" />
-                      </FormControl>
-                      
-                      <FormControl>
-                        <FormLabel>電話番号</FormLabel>
+                            </FieldRoot>
+
+                            <FieldRoot>
+                                <FieldLabel>電話番号</FieldLabel>
                         <Input type="tel" defaultValue="03-1234-5678" />
-                      </FormControl>
-                      
-                      <FormControl>
-                        <FormLabel>役職</FormLabel>
-                        <Select defaultValue="manager">
-                          <option value="admin">管理者</option>
-                          <option value="manager">マネージャー</option>
-                          <option value="staff">スタッフ</option>
-                        </Select>
-                      </FormControl>
+                            </FieldRoot>
+
+                            <FieldRoot>
+                                <FieldLabel>役職</FieldLabel>
+                                <NativeSelectRoot>
+                                    <NativeSelectField defaultValue="manager">
+                                        <option value="admin">管理者</option>
+                                        <option value="manager">マネージャー</option>
+                                        <option value="staff">スタッフ</option>
+                                    </NativeSelectField>
+                                </NativeSelectRoot>
+                            </FieldRoot>
                     </SimpleGrid>
 
-                    <Divider />
+                        <Separator/>
 
                         <VStack align="stretch" gap={3}>
                       <Heading size="sm">パスワード変更</Heading>
-                      <FormControl>
-                        <FormLabel>現在のパスワード</FormLabel>
+                            <FieldRoot>
+                                <FieldLabel>現在のパスワード</FieldLabel>
                         <Input type="password" placeholder="現在のパスワードを入力" />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>新しいパスワード</FormLabel>
+                            </FieldRoot>
+                            <FieldRoot>
+                                <FieldLabel>新しいパスワード</FieldLabel>
                         <Input type="password" placeholder="新しいパスワードを入力" />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>新しいパスワード（確認）</FormLabel>
+                            </FieldRoot>
+                            <FieldRoot>
+                                <FieldLabel>新しいパスワード（確認）</FieldLabel>
                         <Input type="password" placeholder="もう一度入力してください" />
-                      </FormControl>
+                            </FieldRoot>
                     </VStack>
 
                     <HStack justify="flex-end">
                       <Button variant="outline">キャンセル</Button>
                       <Button 
                         colorScheme="orange" 
-                        leftIcon={<FiSave />}
                         onClick={() => handleSave('プロフィール')}
                       >
+                          <FiSave/>
                         保存する
                       </Button>
                     </HStack>
                   </VStack>
                 </CardBody>
-              </Card>
-            </TabPanel>
+                    </CardRoot>
+                </TabsContent>
 
             {/* 店舗情報 */}
-            <TabPanel>
-              <Card bg={bgColor}>
+                <TabsContent value="store">
+                    <CardRoot bg={bgColor}>
                 <CardBody>
                     <VStack gap={6} align="stretch">
                         <SimpleGrid columns={{base: 1, md: 2}} gap={4}>
-                      <FormControl>
-                        <FormLabel>店舗名</FormLabel>
+                            <FieldRoot>
+                                <FieldLabel>店舗名</FieldLabel>
                         <Input 
                           value={storeName} 
                           onChange={(e) => setStoreName(e.target.value)}
                         />
-                      </FormControl>
-                      
-                      <FormControl>
-                        <FormLabel>業態</FormLabel>
-                        <Select defaultValue="restaurant">
-                          <option value="restaurant">レストラン</option>
-                          <option value="cafe">カフェ</option>
-                          <option value="bar">バー</option>
-                          <option value="izakaya">居酒屋</option>
-                          <option value="other">その他</option>
-                        </Select>
-                      </FormControl>
-                      
-                      <FormControl gridColumn={{ md: 'span 2' }}>
-                        <FormLabel>住所</FormLabel>
+                            </FieldRoot>
+
+                            <FieldRoot>
+                                <FieldLabel>業態</FieldLabel>
+                                <NativeSelectRoot>
+                                    <NativeSelectField defaultValue="restaurant">
+                                        <option value="restaurant">レストラン</option>
+                                        <option value="cafe">カフェ</option>
+                                        <option value="bar">バー</option>
+                                        <option value="izakaya">居酒屋</option>
+                                        <option value="other">その他</option>
+                                    </NativeSelectField>
+                                </NativeSelectRoot>
+                            </FieldRoot>
+
+                            <FieldRoot gridColumn={{md: 'span 2'}}>
+                                <FieldLabel>住所</FieldLabel>
                         <Input 
                           value={storeAddress} 
                           onChange={(e) => setStoreAddress(e.target.value)}
                         />
-                      </FormControl>
-                      
-                      <FormControl>
-                        <FormLabel>営業開始時間</FormLabel>
+                            </FieldRoot>
+
+                            <FieldRoot>
+                                <FieldLabel>営業開始時間</FieldLabel>
                         <Input 
                           type="time" 
                           value={openTime}
                           onChange={(e) => setOpenTime(e.target.value)}
                         />
-                      </FormControl>
-                      
-                      <FormControl>
-                        <FormLabel>営業終了時間</FormLabel>
+                            </FieldRoot>
+
+                            <FieldRoot>
+                                <FieldLabel>営業終了時間</FieldLabel>
                         <Input 
                           type="time" 
                           value={closeTime}
                           onChange={(e) => setCloseTime(e.target.value)}
                         />
-                      </FormControl>
-                      
-                      <FormControl gridColumn={{ md: 'span 2' }}>
-                        <FormLabel>定休日</FormLabel>
+                            </FieldRoot>
+
+                            <FieldRoot gridColumn={{md: 'span 2'}}>
+                                <FieldLabel>定休日</FieldLabel>
                           <HStack gap={3} flexWrap="wrap">
                           {['月', '火', '水', '木', '金', '土', '日'].map((day) => (
                             <Button 
@@ -321,10 +321,10 @@ export const Settings: React.FC = () => {
                             </Button>
                           ))}
                         </HStack>
-                      </FormControl>
+                            </FieldRoot>
                     </SimpleGrid>
 
-                    <Divider />
+                        <Separator/>
 
                     <Box>
                       <Heading size="sm" mb={3}>店舗マップ</Heading>
@@ -350,31 +350,31 @@ export const Settings: React.FC = () => {
                       <Button variant="outline">キャンセル</Button>
                       <Button 
                         colorScheme="orange" 
-                        leftIcon={<FiSave />}
                         onClick={() => handleSave('店舗情報')}
                       >
+                          <FiSave/>
                         保存する
                       </Button>
                     </HStack>
                   </VStack>
                 </CardBody>
-              </Card>
-            </TabPanel>
+                    </CardRoot>
+                </TabsContent>
 
             {/* 商品設定 */}
-            <TabPanel>
+                <TabsContent value="products">
                 <VStack gap={6} align="stretch">
                 {/* カテゴリ管理 */}
-                <Card bg={bgColor}>
+                    <CardRoot bg={bgColor}>
                   <CardHeader>
                     <HStack justify="space-between">
                       <Heading size="md">カテゴリ管理</Heading>
                       <Button 
                         size="sm" 
                         colorScheme="orange" 
-                        leftIcon={<FiPlus />}
                         onClick={() => handleModalOpen('category')}
                       >
+                          <FiPlus/>
                         カテゴリ追加
                       </Button>
                     </HStack>
@@ -382,7 +382,7 @@ export const Settings: React.FC = () => {
                   <CardBody>
                       <SimpleGrid columns={{base: 2, md: 3, lg: 5}} gap={4}>
                       {mockCategories.map((category) => (
-                        <Card key={category.id} variant="outline">
+                          <CardRoot key={category.id} variant="outline">
                           <CardBody>
                               <VStack gap={2}>
                               <Text fontSize="2xl">{category.icon}</Text>
@@ -391,164 +391,180 @@ export const Settings: React.FC = () => {
                               <HStack>
                                 <IconButton
                                   aria-label="編集"
-                                  icon={<FiEdit2 />}
                                   size="xs"
                                   variant="ghost"
-                                />
+                                >
+                                    <FiEdit2/>
+                                </IconButton>
                                 <IconButton
                                   aria-label="削除"
-                                  icon={<FiTrash2 />}
                                   size="xs"
                                   variant="ghost"
                                   colorScheme="red"
-                                />
+                                >
+                                    <FiTrash2/>
+                                </IconButton>
                               </HStack>
                             </VStack>
                           </CardBody>
-                        </Card>
+                          </CardRoot>
                       ))}
                     </SimpleGrid>
                   </CardBody>
-                </Card>
+                    </CardRoot>
 
                 {/* 単位マスタ */}
-                <Card bg={bgColor}>
+                    <CardRoot bg={bgColor}>
                   <CardHeader>
                     <HStack justify="space-between">
                       <Heading size="md">単位マスタ</Heading>
                       <Button 
                         size="sm" 
                         colorScheme="orange" 
-                        leftIcon={<FiPlus />}
                         onClick={() => handleModalOpen('unit')}
                       >
+                          <FiPlus/>
                         単位追加
                       </Button>
                     </HStack>
                   </CardHeader>
                   <CardBody>
-                    <TableContainer>
-                      <Table variant="simple">
-                        <Thead>
-                          <Tr>
-                            <Th>単位名</Th>
-                            <Th>記号</Th>
-                            <Th>種類</Th>
-                            <Th>操作</Th>
-                          </Tr>
-                        </Thead>
-                        <Tbody>
+                      <Table.ScrollArea>
+                          <Table.Root>
+                              <Table.Header>
+                                  <Table.Row>
+                                      <Table.ColumnHeader>単位名</Table.ColumnHeader>
+                                      <Table.ColumnHeader>記号</Table.ColumnHeader>
+                                      <Table.ColumnHeader>種類</Table.ColumnHeader>
+                                      <Table.ColumnHeader>操作</Table.ColumnHeader>
+                                  </Table.Row>
+                              </Table.Header>
+                              <Table.Body>
                           {mockUnits.map((unit) => (
-                            <Tr key={unit.id}>
-                              <Td>{unit.name}</Td>
-                              <Td>
+                              <Table.Row key={unit.id}>
+                                  <Table.Cell>{unit.name}</Table.Cell>
+                                  <Table.Cell>
                                 <Badge>{unit.symbol}</Badge>
-                              </Td>
-                              <Td>{unit.type}</Td>
-                              <Td>
+                                  </Table.Cell>
+                                  <Table.Cell>{unit.type}</Table.Cell>
+                                  <Table.Cell>
                                   <HStack gap={2}>
                                   <IconButton
                                     aria-label="編集"
-                                    icon={<FiEdit2 />}
                                     size="sm"
                                     variant="ghost"
-                                  />
+                                  >
+                                      <FiEdit2/>
+                                  </IconButton>
                                   <IconButton
                                     aria-label="削除"
-                                    icon={<FiTrash2 />}
                                     size="sm"
                                     variant="ghost"
                                     colorScheme="red"
-                                  />
+                                  >
+                                      <FiTrash2/>
+                                  </IconButton>
                                 </HStack>
-                              </Td>
-                            </Tr>
+                                  </Table.Cell>
+                              </Table.Row>
                           ))}
-                        </Tbody>
-                      </Table>
-                    </TableContainer>
+                              </Table.Body>
+                          </Table.Root>
+                      </Table.ScrollArea>
                   </CardBody>
-                </Card>
+                    </CardRoot>
 
                 {/* 在庫設定 */}
-                <Card bg={bgColor}>
+                    <CardRoot bg={bgColor}>
                   <CardHeader>
                     <Heading size="md">在庫アラート設定</Heading>
                   </CardHeader>
                   <CardBody>
                       <VStack gap={6} align="stretch">
-                      <FormControl>
-                        <FormLabel>
+                          <FieldRoot>
+                              <FieldLabel>
                           期限切れアラート（{alertDays}日前）
-                        </FormLabel>
-                        <Slider 
-                          value={alertDays} 
-                          onChange={setAlertDays}
+                              </FieldLabel>
+                              <SliderRoot
+                                  value={[alertDays]}
+                                  onValueChange={(details) => setAlertDays(details.value[0])}
                           min={1}
                           max={14}
-                          colorScheme="orange"
+                                  colorPalette="orange"
                         >
-                          <SliderMark value={1} mt={2} fontSize="sm">1日</SliderMark>
-                          <SliderMark value={7} mt={2} ml={-2} fontSize="sm">7日</SliderMark>
-                          <SliderMark value={14} mt={2} ml={-4} fontSize="sm">14日</SliderMark>
                           <SliderTrack>
-                            <SliderFilledTrack />
+                              <SliderRange/>
                           </SliderTrack>
-                          <SliderThumb />
-                        </Slider>
-                      </FormControl>
+                                  <SliderThumb index={0}/>
+                                  <SliderMarker value={1}>
+                                      1日
+                                  </SliderMarker>
+                                  <SliderMarker value={7}>
+                                      7日
+                                  </SliderMarker>
+                                  <SliderMarker value={14}>
+                                      14日
+                                  </SliderMarker>
+                              </SliderRoot>
+                          </FieldRoot>
 
-                      <FormControl>
-                        <FormLabel>
+                          <FieldRoot>
+                              <FieldLabel>
                           在庫不足アラート（残り{stockLevel}%）
-                        </FormLabel>
-                        <Slider 
-                          value={stockLevel} 
-                          onChange={setStockLevel}
+                              </FieldLabel>
+                              <SliderRoot
+                                  value={[stockLevel]}
+                                  onValueChange={(details) => setStockLevel(details.value[0])}
                           min={5}
                           max={50}
                           step={5}
-                          colorScheme="orange"
+                                  colorPalette="orange"
                         >
-                          <SliderMark value={10} mt={2} fontSize="sm">10%</SliderMark>
-                          <SliderMark value={30} mt={2} ml={-2} fontSize="sm">30%</SliderMark>
-                          <SliderMark value={50} mt={2} ml={-4} fontSize="sm">50%</SliderMark>
                           <SliderTrack>
-                            <SliderFilledTrack />
+                              <SliderRange/>
                           </SliderTrack>
-                          <SliderThumb />
-                        </Slider>
-                      </FormControl>
+                                  <SliderThumb index={0}/>
+                                  <SliderMarker value={10}>
+                                      10%
+                                  </SliderMarker>
+                                  <SliderMarker value={30}>
+                                      30%
+                                  </SliderMarker>
+                                  <SliderMarker value={50}>
+                                      50%
+                                  </SliderMarker>
+                              </SliderRoot>
+                          </FieldRoot>
 
                       <HStack justify="flex-end">
                         <Button 
                           colorScheme="orange" 
-                          leftIcon={<FiSave />}
                           onClick={() => handleSave('商品設定')}
                         >
+                            <FiSave/>
                           保存する
                         </Button>
                       </HStack>
                     </VStack>
                   </CardBody>
-                </Card>
+                    </CardRoot>
               </VStack>
-            </TabPanel>
+                </TabsContent>
 
             {/* 通知設定 */}
-            <TabPanel>
-              <Card bg={bgColor}>
+                <TabsContent value="notifications">
+                    <CardRoot bg={bgColor}>
                 <CardBody>
                     <VStack gap={6} align="stretch">
-                    <Alert status="info" borderRadius="lg">
-                      <AlertIcon />
+                        <AlertRoot status="info" borderRadius="lg">
+                            <Icon as={FiInfo}/>
                       <Box>
                         <AlertTitle>通知について</AlertTitle>
                         <AlertDescription>
                           重要な情報をタイムリーにお知らせします。必要な通知だけをONにしてください。
                         </AlertDescription>
                       </Box>
-                    </Alert>
+                        </AlertRoot>
 
                         <VStack align="stretch" gap={4}>
                       <HStack justify="space-between" p={4} bg="orange.50" borderRadius="lg">
@@ -561,12 +577,17 @@ export const Settings: React.FC = () => {
                             </Text>
                           </Box>
                         </HStack>
-                        <Switch 
-                          isChecked={notifications.stockAlert}
-                          onChange={(e) => setNotifications({...notifications, stockAlert: e.target.checked})}
-                          colorScheme="orange"
+                          <SwitchRoot
+                              checked={notifications.stockAlert}
+                              onCheckedChange={(details) => setNotifications({
+                                  ...notifications,
+                                  stockAlert: details.checked
+                              })}
+                              colorPalette="orange"
                           size="lg"
-                        />
+                          >
+                              <SwitchThumb/>
+                          </SwitchRoot>
                       </HStack>
 
                       <HStack justify="space-between" p={4} bg="red.50" borderRadius="lg">
@@ -579,12 +600,17 @@ export const Settings: React.FC = () => {
                             </Text>
                           </Box>
                         </HStack>
-                        <Switch 
-                          isChecked={notifications.expiryAlert}
-                          onChange={(e) => setNotifications({...notifications, expiryAlert: e.target.checked})}
-                          colorScheme="orange"
+                          <SwitchRoot
+                              checked={notifications.expiryAlert}
+                              onCheckedChange={(details) => setNotifications({
+                                  ...notifications,
+                                  expiryAlert: details.checked
+                              })}
+                              colorPalette="orange"
                           size="lg"
-                        />
+                          >
+                              <SwitchThumb/>
+                          </SwitchRoot>
                       </HStack>
 
                       <HStack justify="space-between" p={4} bg="blue.50" borderRadius="lg">
@@ -597,12 +623,17 @@ export const Settings: React.FC = () => {
                             </Text>
                           </Box>
                         </HStack>
-                        <Switch 
-                          isChecked={notifications.orderReminder}
-                          onChange={(e) => setNotifications({...notifications, orderReminder: e.target.checked})}
-                          colorScheme="orange"
+                          <SwitchRoot
+                              checked={notifications.orderReminder}
+                              onCheckedChange={(details) => setNotifications({
+                                  ...notifications,
+                                  orderReminder: details.checked
+                              })}
+                              colorPalette="orange"
                           size="lg"
-                        />
+                          >
+                              <SwitchThumb/>
+                          </SwitchRoot>
                       </HStack>
 
                       <HStack justify="space-between" p={4} bg="green.50" borderRadius="lg">
@@ -615,12 +646,17 @@ export const Settings: React.FC = () => {
                             </Text>
                           </Box>
                         </HStack>
-                        <Switch 
-                          isChecked={notifications.reportSummary}
-                          onChange={(e) => setNotifications({...notifications, reportSummary: e.target.checked})}
-                          colorScheme="orange"
+                          <SwitchRoot
+                              checked={notifications.reportSummary}
+                              onCheckedChange={(details) => setNotifications({
+                                  ...notifications,
+                                  reportSummary: details.checked
+                              })}
+                              colorPalette="orange"
                           size="lg"
-                        />
+                          >
+                              <SwitchThumb/>
+                          </SwitchRoot>
                       </HStack>
 
                       <HStack justify="space-between" p={4} bg="purple.50" borderRadius="lg">
@@ -633,16 +669,21 @@ export const Settings: React.FC = () => {
                             </Text>
                           </Box>
                         </HStack>
-                        <Switch 
-                          isChecked={notifications.systemUpdate}
-                          onChange={(e) => setNotifications({...notifications, systemUpdate: e.target.checked})}
-                          colorScheme="orange"
+                          <SwitchRoot
+                              checked={notifications.systemUpdate}
+                              onCheckedChange={(details) => setNotifications({
+                                  ...notifications,
+                                  systemUpdate: details.checked
+                              })}
+                              colorPalette="orange"
                           size="lg"
-                        />
+                          >
+                              <SwitchThumb/>
+                          </SwitchRoot>
                       </HStack>
                     </VStack>
 
-                    <Divider />
+                        <Separator/>
 
                         <VStack align="stretch" gap={3}>
                       <Heading size="sm">通知方法</Heading>
@@ -668,27 +709,27 @@ export const Settings: React.FC = () => {
                     <HStack justify="flex-end">
                       <Button 
                         colorScheme="orange" 
-                        leftIcon={<FiSave />}
                         onClick={() => handleSave('通知設定')}
                       >
+                          <FiSave/>
                         保存する
                       </Button>
                     </HStack>
                   </VStack>
                 </CardBody>
-              </Card>
-            </TabPanel>
+                    </CardRoot>
+                </TabsContent>
 
             {/* 画面設定 */}
-            <TabPanel>
-              <Card bg={bgColor}>
+                <TabsContent value="appearance">
+                    <CardRoot bg={bgColor}>
                 <CardBody>
                     <VStack gap={6} align="stretch">
                         <VStack align="stretch" gap={4}>
                       <Heading size="sm">テーマカラー</Heading>
-                      <RadioGroup value={theme} onChange={setTheme}>
+                            <Box>
                           <SimpleGrid columns={{base: 2, md: 4}} gap={4}>
-                          <Card 
+                              <CardRoot
                             p={3} 
                             borderWidth={2} 
                             borderColor={theme === 'orange' ? 'orange.500' : 'gray.200'}
@@ -697,10 +738,10 @@ export const Settings: React.FC = () => {
                           >
                             <VStack>
                               <Box w={12} h={12} bg="orange.500" borderRadius="lg" />
-                              <Radio value="orange">オレンジ</Radio>
+                                <Text>オレンジ</Text>
                             </VStack>
-                          </Card>
-                          <Card 
+                              </CardRoot>
+                              <CardRoot
                             p={3} 
                             borderWidth={2} 
                             borderColor={theme === 'blue' ? 'blue.500' : 'gray.200'}
@@ -709,10 +750,10 @@ export const Settings: React.FC = () => {
                           >
                             <VStack>
                               <Box w={12} h={12} bg="blue.500" borderRadius="lg" />
-                              <Radio value="blue">ブルー</Radio>
+                                <Text>ブルー</Text>
                             </VStack>
-                          </Card>
-                          <Card 
+                              </CardRoot>
+                              <CardRoot
                             p={3} 
                             borderWidth={2} 
                             borderColor={theme === 'green' ? 'green.500' : 'gray.200'}
@@ -721,10 +762,10 @@ export const Settings: React.FC = () => {
                           >
                             <VStack>
                               <Box w={12} h={12} bg="green.500" borderRadius="lg" />
-                              <Radio value="green">グリーン</Radio>
+                                <Text>グリーン</Text>
                             </VStack>
-                          </Card>
-                          <Card 
+                              </CardRoot>
+                              <CardRoot
                             p={3} 
                             borderWidth={2} 
                             borderColor={theme === 'purple' ? 'purple.500' : 'gray.200'}
@@ -733,20 +774,20 @@ export const Settings: React.FC = () => {
                           >
                             <VStack>
                               <Box w={12} h={12} bg="purple.500" borderRadius="lg" />
-                              <Radio value="purple">パープル</Radio>
+                                <Text>パープル</Text>
                             </VStack>
-                          </Card>
+                              </CardRoot>
                         </SimpleGrid>
-                      </RadioGroup>
+                            </Box>
                     </VStack>
 
-                    <Divider />
+                        <Separator/>
 
                         <VStack align="stretch" gap={4}>
                       <Heading size="sm">文字サイズ</Heading>
-                      <RadioGroup value={fontSize} onChange={setFontSize}>
+                            <Box>
                           <HStack gap={4}>
-                          <Card 
+                              <CardRoot
                             p={4} 
                             borderWidth={2} 
                             borderColor={fontSize === 'small' ? 'orange.500' : 'gray.200'}
@@ -755,10 +796,10 @@ export const Settings: React.FC = () => {
                           >
                             <VStack>
                               <Icon as={FiType} fontSize="lg" />
-                              <Radio value="small">小</Radio>
+                                <Text>小</Text>
                             </VStack>
-                          </Card>
-                          <Card 
+                              </CardRoot>
+                              <CardRoot
                             p={4} 
                             borderWidth={2} 
                             borderColor={fontSize === 'medium' ? 'orange.500' : 'gray.200'}
@@ -767,10 +808,10 @@ export const Settings: React.FC = () => {
                           >
                             <VStack>
                               <Icon as={FiType} fontSize="xl" />
-                              <Radio value="medium">中</Radio>
+                                <Text>中</Text>
                             </VStack>
-                          </Card>
-                          <Card 
+                              </CardRoot>
+                              <CardRoot
                             p={4} 
                             borderWidth={2} 
                             borderColor={fontSize === 'large' ? 'orange.500' : 'gray.200'}
@@ -779,14 +820,14 @@ export const Settings: React.FC = () => {
                           >
                             <VStack>
                               <Icon as={FiType} fontSize="2xl" />
-                              <Radio value="large">大</Radio>
+                                <Text>大</Text>
                             </VStack>
-                          </Card>
+                              </CardRoot>
                         </HStack>
-                      </RadioGroup>
+                            </Box>
                     </VStack>
 
-                    <Divider />
+                        <Separator/>
 
                         <VStack align="stretch" gap={4}>
                       <Heading size="sm">その他の設定</Heading>
@@ -796,18 +837,22 @@ export const Settings: React.FC = () => {
                             <Icon as={FiMoon} />
                             <Text>ダークモード</Text>
                           </HStack>
-                          <Switch colorScheme="orange" />
+                            <SwitchRoot colorPalette="orange">
+                                <SwitchThumb/>
+                            </SwitchRoot>
                         </HStack>
                         <HStack justify="space-between">
                           <HStack>
                             <Icon as={FiGlobe} />
                             <Text>言語</Text>
                           </HStack>
-                          <Select w="150px" defaultValue="ja">
-                            <option value="ja">日本語</option>
-                            <option value="en">English</option>
-                            <option value="zh">中文</option>
-                          </Select>
+                            <NativeSelectRoot w="150px">
+                                <NativeSelectField defaultValue="ja">
+                                    <option value="ja">日本語</option>
+                                    <option value="en">English</option>
+                                    <option value="zh">中文</option>
+                                </NativeSelectField>
+                            </NativeSelectRoot>
                         </HStack>
                       </Stack>
                     </VStack>
@@ -815,113 +860,125 @@ export const Settings: React.FC = () => {
                     <HStack justify="flex-end">
                       <Button 
                         colorScheme="orange" 
-                        leftIcon={<FiSave />}
                         onClick={() => handleSave('画面設定')}
                       >
+                          <FiSave/>
                         保存する
                       </Button>
                     </HStack>
                   </VStack>
                 </CardBody>
-              </Card>
-            </TabPanel>
+                    </CardRoot>
+                </TabsContent>
 
             {/* ユーザー管理 */}
-            <TabPanel>
-              <Card bg={bgColor}>
+                <TabsContent value="users">
+                    <CardRoot bg={bgColor}>
                 <CardHeader>
                   <HStack justify="space-between">
                     <Heading size="md">ユーザー一覧</Heading>
                     <Button 
                       colorScheme="orange" 
-                      leftIcon={<FiPlus />}
                       onClick={() => handleModalOpen('user')}
                     >
+                        <FiPlus/>
                       ユーザー追加
                     </Button>
                   </HStack>
                 </CardHeader>
                 <CardBody>
-                  <TableContainer>
-                    <Table variant="simple">
-                      <Thead>
-                        <Tr>
-                          <Th>ユーザー</Th>
-                          <Th>メールアドレス</Th>
-                          <Th>役割</Th>
-                          <Th>ステータス</Th>
-                          <Th>操作</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody>
+                    <Table.ScrollArea>
+                        <Table.Root>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.ColumnHeader>ユーザー</Table.ColumnHeader>
+                                    <Table.ColumnHeader>メールアドレス</Table.ColumnHeader>
+                                    <Table.ColumnHeader>役割</Table.ColumnHeader>
+                                    <Table.ColumnHeader>ステータス</Table.ColumnHeader>
+                                    <Table.ColumnHeader>操作</Table.ColumnHeader>
+                                </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
                         {mockUsers.map((user) => (
-                          <Tr key={user.id}>
-                            <Td>
+                            <Table.Row key={user.id}>
+                                <Table.Cell>
                               <HStack>
                                 <Text fontSize="xl">{user.avatar}</Text>
                                 <Text fontWeight="bold">{user.name}</Text>
                               </HStack>
-                            </Td>
-                            <Td>{user.email}</Td>
-                            <Td>
+                                </Table.Cell>
+                                <Table.Cell>{user.email}</Table.Cell>
+                                <Table.Cell>
                               <Badge colorScheme={getRoleBadgeColor(user.role)}>
                                 {user.role}
                               </Badge>
-                            </Td>
-                            <Td>
+                                </Table.Cell>
+                                <Table.Cell>
                               <Badge colorScheme={user.status === 'active' ? 'green' : 'gray'}>
                                 {user.status === 'active' ? '有効' : '無効'}
                               </Badge>
-                            </Td>
-                            <Td>
+                                </Table.Cell>
+                                <Table.Cell>
                                 <HStack gap={2}>
-                                <Tooltip label="編集">
-                                  <IconButton
-                                    aria-label="編集"
-                                    icon={<FiEdit2 />}
-                                    size="sm"
-                                    variant="ghost"
-                                  />
-                                </Tooltip>
-                                <Tooltip label={user.status === 'active' ? '無効化' : '有効化'}>
-                                  <IconButton
-                                    aria-label="ステータス変更"
-                                    icon={user.status === 'active' ? <FiLock /> : <FiUnlock />}
-                                    size="sm"
-                                    variant="ghost"
-                                    colorScheme={user.status === 'active' ? 'orange' : 'green'}
-                                  />
-                                </Tooltip>
-                                <Tooltip label="削除">
-                                  <IconButton
-                                    aria-label="削除"
-                                    icon={<FiTrash2 />}
-                                    size="sm"
-                                    variant="ghost"
-                                    colorScheme="red"
-                                  />
-                                </Tooltip>
+                                    <TooltipRoot>
+                                        <TooltipTrigger asChild>
+                                            <IconButton
+                                                aria-label="編集"
+                                                size="sm"
+                                                variant="ghost"
+                                            >
+                                                <FiEdit2/>
+                                            </IconButton>
+                                        </TooltipTrigger>
+                                        <TooltipContent>編集</TooltipContent>
+                                    </TooltipRoot>
+                                    <TooltipRoot>
+                                        <TooltipTrigger asChild>
+                                            <IconButton
+                                                aria-label="ステータス変更"
+                                                size="sm"
+                                                variant="ghost"
+                                                colorScheme={user.status === 'active' ? 'orange' : 'green'}
+                                            >
+                                                {user.status === 'active' ? <FiLock/> : <FiUnlock/>}
+                                            </IconButton>
+                                        </TooltipTrigger>
+                                        <TooltipContent>{user.status === 'active' ? '無効化' : '有効化'}</TooltipContent>
+                                    </TooltipRoot>
+                                    <TooltipRoot>
+                                        <TooltipTrigger asChild>
+                                            <IconButton
+                                                aria-label="削除"
+                                                size="sm"
+                                                variant="ghost"
+                                                colorScheme="red"
+                                            >
+                                                <FiTrash2/>
+                                            </IconButton>
+                                        </TooltipTrigger>
+                                        <TooltipContent>削除</TooltipContent>
+                                    </TooltipRoot>
                               </HStack>
-                            </Td>
-                          </Tr>
+                                </Table.Cell>
+                            </Table.Row>
                         ))}
-                      </Tbody>
-                    </Table>
-                  </TableContainer>
+                            </Table.Body>
+                        </Table.Root>
+                    </Table.ScrollArea>
                 </CardBody>
-              </Card>
-            </TabPanel>
+                    </CardRoot>
+                </TabsContent>
 
             {/* システム */}
-            <TabPanel>
+                <TabsContent value="system">
                 <VStack gap={6} align="stretch">
-                <Card bg={bgColor}>
+                    <CardRoot bg={bgColor}>
                   <CardHeader>
                     <Heading size="md">データ管理</Heading>
                   </CardHeader>
                   <CardBody>
                       <SimpleGrid columns={{base: 1, md: 2}} gap={4}>
-                      <Card variant="outline">
+                          <CardRoot variant="outline">
                         <CardBody>
                             <VStack gap={3}>
                             <Icon as={FiDownload} fontSize="2xl" color="blue.500" />
@@ -929,14 +986,15 @@ export const Settings: React.FC = () => {
                             <Text fontSize="sm" color="gray.600" textAlign="center">
                               データのバックアップを作成します
                             </Text>
-                            <Button colorScheme="blue" size="sm" leftIcon={<FiDownload />}>
+                                <Button colorScheme="blue" size="sm">
+                                    <FiDownload/>
                               バックアップ作成
                             </Button>
                           </VStack>
                         </CardBody>
-                      </Card>
+                          </CardRoot>
 
-                      <Card variant="outline">
+                          <CardRoot variant="outline">
                         <CardBody>
                             <VStack gap={3}>
                             <Icon as={FiUpload} fontSize="2xl" color="green.500" />
@@ -944,14 +1002,15 @@ export const Settings: React.FC = () => {
                             <Text fontSize="sm" color="gray.600" textAlign="center">
                               バックアップからデータを復元します
                             </Text>
-                            <Button colorScheme="green" size="sm" leftIcon={<FiUpload />}>
+                                <Button colorScheme="green" size="sm">
+                                    <FiUpload/>
                               データ復元
                             </Button>
                           </VStack>
                         </CardBody>
-                      </Card>
+                          </CardRoot>
 
-                      <Card variant="outline">
+                          <CardRoot variant="outline">
                         <CardBody>
                             <VStack gap={3}>
                             <Icon as={FiDatabase} fontSize="2xl" color="purple.500" />
@@ -964,9 +1023,9 @@ export const Settings: React.FC = () => {
                             </Button>
                           </VStack>
                         </CardBody>
-                      </Card>
+                          </CardRoot>
 
-                      <Card variant="outline">
+                          <CardRoot variant="outline">
                         <CardBody>
                             <VStack gap={3}>
                             <Icon as={FiRefreshCw} fontSize="2xl" color="orange.500" />
@@ -974,17 +1033,18 @@ export const Settings: React.FC = () => {
                             <Text fontSize="sm" color="gray.600" textAlign="center">
                               一時ファイルをクリアします
                             </Text>
-                            <Button colorScheme="orange" size="sm" leftIcon={<FiRefreshCw />}>
+                                <Button colorScheme="orange" size="sm">
+                                    <FiRefreshCw/>
                               クリア実行
                             </Button>
                           </VStack>
                         </CardBody>
-                      </Card>
+                          </CardRoot>
                     </SimpleGrid>
                   </CardBody>
-                </Card>
+                    </CardRoot>
 
-                <Card bg={bgColor}>
+                    <CardRoot bg={bgColor}>
                   <CardHeader>
                     <Heading size="md">システム情報</Heading>
                   </CardHeader>
@@ -1008,15 +1068,15 @@ export const Settings: React.FC = () => {
                       </HStack>
                     </VStack>
                   </CardBody>
-                </Card>
+                    </CardRoot>
               </VStack>
-            </TabPanel>
+                </TabsContent>
 
             {/* ヘルプ */}
-            <TabPanel>
+                <TabsContent value="help">
                 <VStack gap={6} align="stretch">
-                <Alert status="info" borderRadius="lg">
-                  <AlertIcon />
+                    <AlertRoot status="info" borderRadius="lg">
+                        <Icon as={FiInfo}/>
                   <Box>
                     <AlertTitle>サポートセンター</AlertTitle>
                     <AlertDescription>
@@ -1024,10 +1084,10 @@ export const Settings: React.FC = () => {
                       営業時間: 平日 9:00-18:00
                     </AlertDescription>
                   </Box>
-                </Alert>
+                    </AlertRoot>
 
                     <SimpleGrid columns={{base: 1, md: 2}} gap={6}>
-                  <Card bg={bgColor}>
+                        <CardRoot bg={bgColor}>
                     <CardHeader>
                       <Heading size="md">よくある質問</Heading>
                     </CardHeader>
@@ -1037,26 +1097,26 @@ export const Settings: React.FC = () => {
                           <Text>在庫データのバックアップ方法は？</Text>
                           <Icon as={FiChevronRight} />
                         </HStack>
-                        <Divider />
+                            <Separator/>
                         <HStack as="button" justify="space-between" p={3} _hover={{ bg: 'gray.50' }}>
                           <Text>複数店舗での利用は可能ですか？</Text>
                           <Icon as={FiChevronRight} />
                         </HStack>
-                        <Divider />
+                            <Separator/>
                         <HStack as="button" justify="space-between" p={3} _hover={{ bg: 'gray.50' }}>
                           <Text>レポートの出力形式を変更できますか？</Text>
                           <Icon as={FiChevronRight} />
                         </HStack>
-                        <Divider />
+                            <Separator/>
                         <HStack as="button" justify="space-between" p={3} _hover={{ bg: 'gray.50' }}>
                           <Text>パスワードを忘れた場合は？</Text>
                           <Icon as={FiChevronRight} />
                         </HStack>
                       </VStack>
                     </CardBody>
-                  </Card>
+                        </CardRoot>
 
-                  <Card bg={bgColor}>
+                        <CardRoot bg={bgColor}>
                     <CardHeader>
                       <Heading size="md">お問い合わせ</Heading>
                     </CardHeader>
@@ -1065,17 +1125,17 @@ export const Settings: React.FC = () => {
                         <Button 
                           w="full" 
                           colorScheme="orange" 
-                          leftIcon={<FiMail />}
                           size="lg"
                         >
+                            <FiMail/>
                           メールで問い合わせ
                         </Button>
                         <Button 
                           w="full" 
                           colorScheme="green" 
-                          leftIcon={<FiSmartphone />}
                           size="lg"
                         >
+                            <FiSmartphone/>
                           電話で問い合わせ
                         </Button>
                         <Text fontSize="sm" color="gray.600" textAlign="center">
@@ -1084,10 +1144,10 @@ export const Settings: React.FC = () => {
                         </Text>
                       </VStack>
                     </CardBody>
-                  </Card>
+                        </CardRoot>
                 </SimpleGrid>
 
-                <Card bg="orange.50" borderColor="orange.200" borderWidth={2}>
+                    <CardRoot bg="orange.50" borderColor="orange.200" borderWidth={2}>
                   <CardBody>
                       <HStack gap={4}>
                       <Icon as={FiHelpCircle} color="orange.500" fontSize="3xl" />
@@ -1099,109 +1159,114 @@ export const Settings: React.FC = () => {
                           詳しい操作方法はマニュアルをご覧ください
                         </Text>
                       </VStack>
-                      <Button colorScheme="orange" leftIcon={<FiDownload />}>
+                          <Button colorScheme="orange">
+                              <FiDownload/>
                         ダウンロード
                       </Button>
                     </HStack>
                   </CardBody>
-                </Card>
+                    </CardRoot>
               </VStack>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+                </TabsContent>
+            </TabsRoot>
       </VStack>
 
-      {/* モーダル */}
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
+        {/* ダイアログ */}
+        <DialogRoot open={isDialogOpen} onOpenChange={({open}) => !open && handleModalClose()}>
+            <DialogContent>
+                <DialogHeader>
             {modalType === 'user' && 'ユーザー追加'}
             {modalType === 'category' && 'カテゴリ追加'}
             {modalType === 'unit' && '単位追加'}
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+                    <DialogCloseTrigger/>
+                </DialogHeader>
+                <DialogBody>
             {modalType === 'user' && (
                 <VStack gap={4}>
-                <FormControl>
-                  <FormLabel>名前</FormLabel>
+                    <FieldRoot>
+                        <FieldLabel>名前</FieldLabel>
                   <Input placeholder="山田 太郎" />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>メールアドレス</FormLabel>
+                    </FieldRoot>
+                    <FieldRoot>
+                        <FieldLabel>メールアドレス</FieldLabel>
                   <Input type="email" placeholder="yamada@example.com" />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>役割</FormLabel>
-                  <Select>
-                    <option>スタッフ</option>
-                    <option>マネージャー</option>
-                    <option>管理者</option>
-                  </Select>
-                </FormControl>
+                    </FieldRoot>
+                    <FieldRoot>
+                        <FieldLabel>役割</FieldLabel>
+                        <NativeSelectRoot>
+                            <NativeSelectField>
+                                <option>スタッフ</option>
+                                <option>マネージャー</option>
+                                <option>管理者</option>
+                            </NativeSelectField>
+                        </NativeSelectRoot>
+                    </FieldRoot>
               </VStack>
             )}
             {modalType === 'category' && (
                 <VStack gap={4}>
-                <FormControl>
-                  <FormLabel>カテゴリ名</FormLabel>
+                    <FieldRoot>
+                        <FieldLabel>カテゴリ名</FieldLabel>
                   <Input placeholder="例: デザート" />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>アイコン</FormLabel>
+                    </FieldRoot>
+                    <FieldRoot>
+                        <FieldLabel>アイコン</FieldLabel>
                   <Input placeholder="例: 🍰" />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>カラー</FormLabel>
-                  <Select>
-                    <option value="red">赤</option>
-                    <option value="blue">青</option>
-                    <option value="green">緑</option>
-                    <option value="yellow">黄</option>
-                    <option value="purple">紫</option>
-                  </Select>
-                </FormControl>
+                    </FieldRoot>
+                    <FieldRoot>
+                        <FieldLabel>カラー</FieldLabel>
+                        <NativeSelectRoot>
+                            <NativeSelectField>
+                                <option value="red">赤</option>
+                                <option value="blue">青</option>
+                                <option value="green">緑</option>
+                                <option value="yellow">黄</option>
+                                <option value="purple">紫</option>
+                            </NativeSelectField>
+                        </NativeSelectRoot>
+                    </FieldRoot>
               </VStack>
             )}
             {modalType === 'unit' && (
                 <VStack gap={4}>
-                <FormControl>
-                  <FormLabel>単位名</FormLabel>
+                    <FieldRoot>
+                        <FieldLabel>単位名</FieldLabel>
                   <Input placeholder="例: ダース" />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>記号</FormLabel>
+                    </FieldRoot>
+                    <FieldRoot>
+                        <FieldLabel>記号</FieldLabel>
                   <Input placeholder="例: dz" />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>種類</FormLabel>
-                  <Select>
-                    <option>重量</option>
-                    <option>容量</option>
-                    <option>個数</option>
-                    <option>長さ</option>
-                  </Select>
-                </FormControl>
+                    </FieldRoot>
+                    <FieldRoot>
+                        <FieldLabel>種類</FieldLabel>
+                        <NativeSelectRoot>
+                            <NativeSelectField>
+                                <option>重量</option>
+                                <option>容量</option>
+                                <option>個数</option>
+                                <option>長さ</option>
+                            </NativeSelectField>
+                        </NativeSelectRoot>
+                    </FieldRoot>
               </VStack>
             )}
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onClose}>
+                </DialogBody>
+                <DialogFooter>
+                    <Button variant="ghost" mr={3} onClick={handleModalClose}>
               キャンセル
             </Button>
             <Button 
               colorScheme="orange" 
               onClick={() => {
                 handleSave(modalType === 'user' ? 'ユーザー' : modalType === 'category' ? 'カテゴリ' : '単位');
-                onClose();
+                  handleModalClose();
               }}
             >
               追加
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+                </DialogFooter>
+            </DialogContent>
+        </DialogRoot>
     </Box>
   );
 };
