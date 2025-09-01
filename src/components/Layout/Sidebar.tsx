@@ -1,31 +1,20 @@
 import React from 'react';
+import {Box, Flex, HStack, Icon, IconButton, Text, useBreakpointValue, useDisclosure, VStack,} from '@chakra-ui/react';
+import {Drawer} from '@chakra-ui/react/drawer';
+import {Link, useLocation} from 'react-router-dom';
 import {
-  Box,
-  VStack,
-  HStack,
-  Text,
-  Icon,
-  Flex,
-  Avatar,
-  IconButton,
-  useDisclosure,
-  useBreakpointValue,
-} from '@chakra-ui/react';
-import { Drawer } from '@chakra-ui/react/drawer';
-import { Link, useLocation } from 'react-router-dom';
-import {
-  FiHome,
-  FiPackage,
-  FiBox,
-  FiTruck,
-  FiClipboard,
-  FiShoppingCart,
-  FiBarChart2,
-  FiSettings,
-  FiMenu,
-  FiLogOut,
+    FiBarChart2,
+    FiBox,
+    FiClipboard,
+    FiHome,
+    FiLogOut,
+    FiMenu,
+    FiPackage,
+    FiSettings,
+    FiShoppingCart,
+    FiTruck,
 } from 'react-icons/fi';
-import { ROUTES } from '../../config/constants';
+import {ROUTES} from '../../config/constants';
 
 interface SidebarItem {
   label: string;
@@ -57,7 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   user = { name: '田中 太郎', email: 'manager@zaikoban.jp', role: '管理者' }
 }) => {
   const location = useLocation();
-  const { open, onOpen, onClose, setOpen } = useDisclosure();
+    const {open, onOpen, setOpen} = useDisclosure();
   const isMobile = useBreakpointValue({ base: true, lg: false });
   
   const bg = 'white';
@@ -78,9 +67,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       top={0}
       overflowY="auto"
     >
-      <VStack spacing={0} align="stretch" h="full">
+        <VStack gap={0} align="stretch" h="full">
         <Box p={6}>
-          <HStack spacing={3}>
+            <HStack gap={3}>
             <Box
               bg="brand.500"
               color="white"
@@ -195,7 +184,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <>
         <IconButton
           aria-label="メニューを開く"
-          icon={<FiMenu />}
+          children={<FiMenu/>}
           onClick={onOpen}
           position="fixed"
           top={4}
@@ -203,15 +192,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
           zIndex={20}
           colorScheme="brand"
         />
-        <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-          <DrawerOverlay />
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerBody p={0}>
-              <SidebarContent />
-            </DrawerBody>
-          </DrawerContent>
-        </Drawer>
+          <Drawer.Root open={open} placement="start" onOpenChange={(details) => setOpen(details.open)}>
+              <Drawer.Backdrop/>
+              <Drawer.Positioner>
+                  <Drawer.Content>
+                      <Drawer.Header>
+                          <Drawer.CloseTrigger/>
+                      </Drawer.Header>
+                      <Drawer.Body p={0}>
+                          <SidebarContent/>
+                      </Drawer.Body>
+                  </Drawer.Content>
+              </Drawer.Positioner>
+          </Drawer.Root>
       </>
     );
   }

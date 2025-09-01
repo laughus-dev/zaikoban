@@ -1,51 +1,33 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
-  Box,
-  Heading,
-  HStack,
-  Button,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  Badge,
-  Image,
-  Text,
-  VStack,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  SimpleGrid,
-  Flex,
-  Icon,
-  useToast,
+    Badge,
+    Box,
+    Button,
+    createToaster,
+    Heading,
+    HStack,
+    Image,
+    SimpleGrid,
+    Text,
+    useDisclosure,
+    VStack,
 } from '@chakra-ui/react';
-import {
-  FiPlus,
-  FiDownload,
-  FiUpload,
-  FiEdit,
-  FiTrash2,
-  FiEye,
-  FiShoppingCart,
-} from 'react-icons/fi';
-import { DataTable, Column } from '../components/common/DataTable';
-import { mockProducts, mockCategories } from '../data/mockData';
-import { Product } from '../types';
-import { formatCurrency, formatQuantity, formatDate, isExpiringSoon } from '../utils/formatters';
-import { calculateStockLevel } from '../utils/calculations';
-import { STOCK_STATUS } from '../config/constants';
+import {Tabs} from '@chakra-ui/react/tabs';
+import {Dialog} from '@chakra-ui/react/dialog';
+import {FiDownload, FiEdit, FiEye, FiPlus, FiShoppingCart, FiTrash2, FiUpload,} from 'react-icons/fi';
+import {type Column, DataTable} from '../components/common/DataTable';
+import {mockCategories, mockProducts} from '../data/mockData';
+import type {Product} from '../types';
+import {formatCurrency, formatDate, formatQuantity, isExpiringSoon} from '../utils/formatters';
+import {calculateStockLevel} from '../utils/calculations';
+import {STOCK_STATUS} from '../config/constants';
 
 export const InventoryList: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
+  const { open, onOpen, onClose } = useDisclosure();
+  const toaster = createToaster({
+    placement: 'top',
+  });
 
   const columns: Column<Product>[] = [
     {
@@ -66,7 +48,7 @@ export const InventoryList: React.FC = () => {
       key: 'name',
       label: '商品名',
       accessor: (item) => (
-        <VStack align="start" spacing={0}>
+        <VStack align="start" gap={0}>
           <Text fontWeight="medium">{item.name}</Text>
           <Text fontSize="xs" color="gray.500">
             {item.code}
@@ -87,7 +69,7 @@ export const InventoryList: React.FC = () => {
       key: 'currentStock',
       label: '在庫数',
       accessor: (item) => (
-        <VStack align="end" spacing={0}>
+        <VStack align="end" gap={0}>
           <Text fontWeight="medium">
             {formatQuantity(item.currentStock, item.unit)}
           </Text>
@@ -143,7 +125,7 @@ export const InventoryList: React.FC = () => {
   };
 
   const handleEdit = (product: Product) => {
-    toast({
+    toaster.create({
       title: '編集画面',
       description: `${product.name}の編集画面を開きます`,
       status: 'info',
@@ -152,7 +134,7 @@ export const InventoryList: React.FC = () => {
   };
 
   const handleDelete = (product: Product) => {
-    toast({
+    toaster.create({
       title: '削除確認',
       description: `${product.name}を削除しますか？`,
       status: 'warning',
@@ -161,7 +143,7 @@ export const InventoryList: React.FC = () => {
   };
 
   const handleOrder = (product: Product) => {
-    toast({
+    toaster.create({
       title: '発注画面',
       description: `${product.name}の発注画面を開きます`,
       status: 'success',
@@ -202,10 +184,10 @@ export const InventoryList: React.FC = () => {
 
   return (
     <Box p={{ base: 4, md: 6 }}>
-      <VStack spacing={6} align="stretch">
+      <VStack gap={6} align="stretch">
         <HStack justify="space-between" flexWrap="wrap">
           <Heading size="lg">在庫一覧</Heading>
-          <HStack spacing={2}>
+          <HStack gap={2}>
             <Button
               leftIcon={<FiUpload />}
               variant="outline"
@@ -230,7 +212,7 @@ export const InventoryList: React.FC = () => {
           </HStack>
         </HStack>
 
-        <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4}>
+        <SimpleGrid columns={{ base: 2, md: 4 }} gap={4}>
           <Box p={4} bg="white" borderRadius="lg" boxShadow="sm">
             <Text fontSize="sm" color="gray.500">総商品数</Text>
             <Text fontSize="2xl" fontWeight="bold">{mockProducts.length}</Text>
@@ -257,21 +239,21 @@ export const InventoryList: React.FC = () => {
           </Box>
         </SimpleGrid>
 
-        <Tabs colorScheme="brand">
-          <TabList>
-            <Tab>すべて</Tab>
+        <Tabs.Root colorPalette="brand">
+          <Tabs.List>
+            <Tabs.Trigger value="all">すべて</Tabs.Trigger>
             {mockCategories.map((category) => (
-              <Tab key={category.id}>
-                <HStack spacing={1}>
+              <Tabs.Trigger key={category.id} value={category.id}>
+                <HStack gap={1}>
                   <Text>{category.icon}</Text>
                   <Text>{category.name}</Text>
                 </HStack>
-              </Tab>
+              </Tabs.Trigger>
             ))}
-          </TabList>
+          </Tabs.List>
 
-          <TabPanels>
-            <TabPanel px={0}>
+          <Tabs.ContentGroup>
+            <Tabs.Content value="all" px={0}>
               <DataTable
                 data={mockProducts}
                 columns={columns}
@@ -284,9 +266,9 @@ export const InventoryList: React.FC = () => {
                 pageSize={10}
                 actions={actions}
               />
-            </TabPanel>
+            </Tabs.Content>
             {mockCategories.map((category) => (
-              <TabPanel key={category.id} px={0}>
+              <Tabs.Content key={category.id} value={category.id} px={0}>
                 <DataTable
                   data={mockProducts.filter(p => p.categoryId === category.id)}
                   columns={columns}
@@ -299,20 +281,21 @@ export const InventoryList: React.FC = () => {
                   pageSize={10}
                   actions={actions}
                 />
-              </TabPanel>
+              </Tabs.Content>
             ))}
-          </TabPanels>
-        </Tabs>
+          </Tabs.ContentGroup>
+        </Tabs.Root>
       </VStack>
 
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{selectedProduct?.name}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+      <Dialog.Root open={open} onOpenChange={(details) => !details.open && onClose()} size="xl">
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Header>{selectedProduct?.name}</Dialog.Header>
+            <Dialog.CloseTrigger />
+            <Dialog.Body>
             {selectedProduct && (
-              <VStack spacing={4} align="stretch">
+              <VStack gap={4} align="stretch">
                 <Image
                   src={selectedProduct.imageUrl || 'https://via.placeholder.com/300'}
                   alt={selectedProduct.name}
@@ -320,7 +303,7 @@ export const InventoryList: React.FC = () => {
                   objectFit="cover"
                   borderRadius="lg"
                 />
-                <SimpleGrid columns={2} spacing={4}>
+                <SimpleGrid columns={2} gap={4}>
                   <Box>
                     <Text fontSize="sm" color="gray.500">商品コード</Text>
                     <Text fontWeight="medium">{selectedProduct.code}</Text>
@@ -372,15 +355,16 @@ export const InventoryList: React.FC = () => {
                 </SimpleGrid>
               </VStack>
             )}
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onClose}>
-              閉じる
-            </Button>
-            <Button colorScheme="brand">編集</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+            </Dialog.Body>
+            <Dialog.Footer>
+              <Button variant="ghost" mr={3} onClick={onClose}>
+                閉じる
+              </Button>
+              <Button colorScheme="brand">編集</Button>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Dialog.Root>
     </Box>
   );
 };

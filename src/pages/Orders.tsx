@@ -1,74 +1,63 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
-  Box,
-  Heading,
-  HStack,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  SimpleGrid,
-  Text,
-  VStack,
-  useToast,
-  Badge,
-  Divider,
-  Flex,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  Checkbox,
-  IconButton,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Select,
+    Alert,
+    AlertDescription,
+    AlertIcon,
+    AlertTitle,
+    Badge,
+    Box,
+    Button,
+    Card,
+    CardBody,
+    CardHeader,
+    Checkbox,
+    Flex,
+    Heading,
+    HStack,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    SimpleGrid,
+    Stat,
+    StatHelpText,
+    StatLabel,
+    StatNumber,
+    Tab,
+    Table,
+    TableContainer,
+    TabList,
+    TabPanel,
+    TabPanels,
+    Tabs,
+    Tbody,
+    Td,
+    Text,
+    Th,
+    Thead,
+    Tr,
+    useDisclosure,
+    useToast,
+    VStack,
 } from '@chakra-ui/react';
 import {
-  FiShoppingCart,
-  FiAlertCircle,
-  FiCheckCircle,
-  FiClock,
-  FiXCircle,
-  FiPlus,
-  FiSend,
-  FiFileText,
-  FiTrash2,
-  FiEdit,
+    FiAlertCircle,
+    FiCheckCircle,
+    FiClock,
+    FiEdit,
+    FiFileText,
+    FiPlus,
+    FiSend,
+    FiShoppingCart,
+    FiXCircle,
 } from 'react-icons/fi';
-import { DataTable, Column } from '../components/common/DataTable';
-import { FormField } from '../components/common/FormField';
-import { Product, Order, OrderItem, Supplier } from '../types';
-import { mockProducts, mockSuppliers } from '../data/mockData';
-import { formatCurrency, formatQuantity, formatDate } from '../utils/formatters';
-import { calculateReorderPoint } from '../utils/calculations';
+import {Column, DataTable} from '../components/common/DataTable';
+import {Order, OrderItem} from '../types';
+import {mockProducts, mockSuppliers} from '../data/mockData';
+import {formatCurrency, formatDate, formatQuantity} from '../utils/formatters';
 
 interface OrderDraft {
   supplierId: string;
@@ -77,7 +66,6 @@ interface OrderDraft {
 }
 
 export const Orders: React.FC = () => {
-  const [selectedSupplier, setSelectedSupplier] = useState<string>('');
   const [orderDrafts, setOrderDrafts] = useState<OrderDraft[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const { isOpen, onOpen, onClose } = useDisclosure();

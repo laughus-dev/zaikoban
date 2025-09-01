@@ -1,55 +1,29 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
-  Box,
-  Heading,
-  HStack,
-  Button,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  SimpleGrid,
-  Text,
-  VStack,
-  useToast,
-  Card,
-  CardBody,
-  Badge,
-  Divider,
-  IconButton,
-  Flex,
-  Select,
-  FormControl,
-  FormLabel,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Textarea,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
+    Badge,
+    Box,
+    Button,
+    createToaster,
+    Flex,
+    FormControl,
+    FormLabel,
+    Heading,
+    HStack,
+    IconButton,
+    SimpleGrid,
+    Text,
+    Textarea,
+    VStack,
 } from '@chakra-ui/react';
-import {
-  FiPlus,
-  FiMinus,
-  FiPackage,
-  FiTruck,
-  FiTrash2,
-  FiSave,
-  FiRefreshCw,
-} from 'react-icons/fi';
-import { DataTable, Column } from '../components/common/DataTable';
-import { FormField } from '../components/common/FormField';
-import { Product, StockTransaction, Supplier } from '../types';
-import { mockProducts, mockSuppliers } from '../data/mockData';
-import { formatCurrency, formatQuantity, formatDate } from '../utils/formatters';
+import {Tabs} from '@chakra-ui/react/tabs';
+import {Card} from '@chakra-ui/react/card';
+import {Table} from '@chakra-ui/react/table';
+import {NativeSelect} from '@chakra-ui/react/native-select';
+import {FiMinus, FiPlus, FiRefreshCw, FiSave, FiTrash2,} from 'react-icons/fi';
+import {Column, DataTable} from '../components/common/DataTable';
+import {StockTransaction} from '../types';
+import {mockProducts, mockSuppliers} from '../data/mockData';
+import {formatCurrency, formatDate, formatQuantity} from '../utils/formatters';
 
 interface BatchItem {
   id: string;
@@ -68,7 +42,9 @@ export const StockInOut: React.FC = () => {
   const [quantity, setQuantity] = useState<number>(0);
   const [unitPrice, setUnitPrice] = useState<number>(0);
   const [note, setNote] = useState<string>('');
-  const toast = useToast();
+    const [toaster] = createToaster({
+        placement: 'top',
+    });
 
   const mockTransactions: StockTransaction[] = [
     {
@@ -116,12 +92,11 @@ export const StockInOut: React.FC = () => {
 
   const handleAddToBatch = () => {
     if (!selectedProductId || quantity <= 0) {
-      toast({
+        toaster.create({
         title: 'エラー',
         description: '商品と数量を入力してください',
         status: 'error',
         duration: 3000,
-        isClosable: true,
       });
       return;
     }
@@ -144,12 +119,11 @@ export const StockInOut: React.FC = () => {
     setUnitPrice(0);
     setNote('');
 
-    toast({
+      toaster.create({
       title: '追加しました',
       description: `${product.name}を追加しました`,
       status: 'success',
       duration: 2000,
-      isClosable: true,
     });
   };
 
@@ -159,12 +133,11 @@ export const StockInOut: React.FC = () => {
 
   const handleSaveBatch = () => {
     if (batchItems.length === 0) {
-      toast({
+        toaster.create({
         title: 'エラー',
         description: '商品を追加してください',
         status: 'error',
         duration: 3000,
-        isClosable: true,
       });
       return;
     }
@@ -188,13 +161,12 @@ export const StockInOut: React.FC = () => {
 
     setTransactions([...newTransactions, ...transactions]);
     setBatchItems([]);
-    
-    toast({
+
+      toaster.create({
       title: transactionType === 'in' ? '入庫登録完了' : '出庫登録完了',
       description: `${batchItems.length}件の商品を登録しました`,
       status: 'success',
       duration: 3000,
-      isClosable: true,
     });
   };
 
@@ -269,31 +241,31 @@ export const StockInOut: React.FC = () => {
     <Box p={6}>
       <Heading size="lg" mb={6}>入出庫登録</Heading>
 
-      <Tabs
-        index={transactionType === 'in' ? 0 : 1}
-        onChange={(index) => setTransactionType(index === 0 ? 'in' : 'out')}
-        colorScheme="primary"
+        <Tabs.Root
+            value={transactionType === 'in' ? 'in' : 'out'}
+            onValueChange={(details) => setTransactionType(details.value as 'in' | 'out')}
+            colorPalette="primary"
       >
-        <TabList>
-          <Tab>
+            <Tabs.List>
+                <Tabs.Trigger value="in">
             <HStack>
               <FiPlus />
               <Text>入庫</Text>
             </HStack>
-          </Tab>
-          <Tab>
+                </Tabs.Trigger>
+                <Tabs.Trigger value="out">
             <HStack>
               <FiMinus />
               <Text>出庫</Text>
             </HStack>
-          </Tab>
-        </TabList>
+                </Tabs.Trigger>
+            </Tabs.List>
 
-        <TabPanels>
-          <TabPanel>
-            <Card mb={6}>
-              <CardBody>
-                <VStack spacing={4} align="stretch">
+            <Tabs.ContentGroup>
+                <Tabs.Content value="in">
+                    <Card.Root mb={6}>
+                        <Card.Body>
+                            <VStack gap={4} align="stretch">
                   <FormField
                     type="select"
                     label="仕入先"
@@ -304,7 +276,7 @@ export const StockInOut: React.FC = () => {
                     placeholder="仕入先を選択"
                   />
 
-                  <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
+                                <SimpleGrid columns={{base: 1, md: 2, lg: 4}} gap={4}>
                     <FormField
                       type="select"
                       label="商品"
@@ -346,7 +318,7 @@ export const StockInOut: React.FC = () => {
                   </SimpleGrid>
 
                   <Button
-                    leftIcon={<FiPlus />}
+                      startIcon={<FiPlus/>}
                     colorScheme="blue"
                     onClick={handleAddToBatch}
                     alignSelf="flex-start"
@@ -354,15 +326,15 @@ export const StockInOut: React.FC = () => {
                     リストに追加
                   </Button>
                 </VStack>
-              </CardBody>
-            </Card>
-          </TabPanel>
+                        </Card.Body>
+                    </Card.Root>
+                </Tabs.Content>
 
-          <TabPanel>
-            <Card mb={6}>
-              <CardBody>
-                <VStack spacing={4} align="stretch">
-                  <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+                <Tabs.Content value="out">
+                    <Card.Root mb={6}>
+                        <Card.Body>
+                            <VStack gap={4} align="stretch">
+                                <SimpleGrid columns={{base: 1, md: 2, lg: 3}} gap={4}>
                     <FormField
                       type="select"
                       label="商品"
@@ -385,21 +357,22 @@ export const StockInOut: React.FC = () => {
                     />
                     <FormControl>
                       <FormLabel>理由</FormLabel>
-                      <Select
+                        <NativeSelect.Root
                         value={note}
-                        onChange={(e) => setNote(e.target.value)}
-                        placeholder="理由を選択"
+                        onValueChange={(details) => setNote(details.value)}
                       >
+                            <NativeSelect.Field placeholder="理由を選択">
                         <option value="料理使用">料理使用</option>
                         <option value="販売">販売</option>
                         <option value="サンプル">サンプル</option>
                         <option value="その他">その他</option>
-                      </Select>
+                            </NativeSelect.Field>
+                        </NativeSelect.Root>
                     </FormControl>
                   </SimpleGrid>
 
                   <Button
-                    leftIcon={<FiPlus />}
+                      startIcon={<FiPlus/>}
                     colorScheme="blue"
                     onClick={handleAddToBatch}
                     alignSelf="flex-start"
@@ -407,20 +380,20 @@ export const StockInOut: React.FC = () => {
                     リストに追加
                   </Button>
                 </VStack>
-              </CardBody>
-            </Card>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+                        </Card.Body>
+                    </Card.Root>
+                </Tabs.Content>
+            </Tabs.ContentGroup>
+        </Tabs.Root>
 
       {batchItems.length > 0 && (
-        <Card mb={6}>
-          <CardBody>
+          <Card.Root mb={6}>
+              <Card.Body>
             <Flex justify="space-between" align="center" mb={4}>
               <Heading size="md">登録予定リスト</Heading>
               <HStack>
                 <Button
-                  leftIcon={<FiRefreshCw />}
+                    startIcon={<FiRefreshCw/>}
                   variant="outline"
                   size="sm"
                   onClick={() => setBatchItems([])}
@@ -428,7 +401,7 @@ export const StockInOut: React.FC = () => {
                   クリア
                 </Button>
                 <Button
-                  leftIcon={<FiSave />}
+                    startIcon={<FiSave/>}
                   colorScheme="primary"
                   size="sm"
                   onClick={handleSaveBatch}
@@ -438,57 +411,59 @@ export const StockInOut: React.FC = () => {
               </HStack>
             </Flex>
 
-            <TableContainer>
-              <Table size="sm">
-                <Thead>
-                  <Tr>
-                    <Th>商品名</Th>
-                    <Th isNumeric>数量</Th>
-                    <Th isNumeric>単価</Th>
-                    <Th isNumeric>金額</Th>
-                    <Th>備考</Th>
-                    <Th width="50px"></Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
+                  <Table.ScrollArea>
+                      <Table.Root size="sm">
+                          <Table.Header>
+                              <Table.Row>
+                                  <Table.ColumnHeader>商品名</Table.ColumnHeader>
+                                  <Table.ColumnHeader textAlign="end">数量</Table.ColumnHeader>
+                                  <Table.ColumnHeader textAlign="end">単価</Table.ColumnHeader>
+                                  <Table.ColumnHeader textAlign="end">金額</Table.ColumnHeader>
+                                  <Table.ColumnHeader>備考</Table.ColumnHeader>
+                                  <Table.ColumnHeader width="50px"></Table.ColumnHeader>
+                              </Table.Row>
+                          </Table.Header>
+                          <Table.Body>
                   {batchItems.map(item => {
                     const product = mockProducts.find(p => p.id === item.productId);
                     return (
-                      <Tr key={item.id}>
-                        <Td>{product?.name}</Td>
-                        <Td isNumeric>{formatQuantity(item.quantity, product?.unit || 'kg')}</Td>
-                        <Td isNumeric>{formatCurrency(item.unitPrice)}</Td>
-                        <Td isNumeric>{formatCurrency(item.totalAmount)}</Td>
-                        <Td>{item.note || '-'}</Td>
-                        <Td>
+                        <Table.Row key={item.id}>
+                            <Table.Cell>{product?.name}</Table.Cell>
+                            <Table.Cell
+                                textAlign="end">{formatQuantity(item.quantity, product?.unit || 'kg')}</Table.Cell>
+                            <Table.Cell textAlign="end">{formatCurrency(item.unitPrice)}</Table.Cell>
+                            <Table.Cell textAlign="end">{formatCurrency(item.totalAmount)}</Table.Cell>
+                            <Table.Cell>{item.note || '-'}</Table.Cell>
+                            <Table.Cell>
                           <IconButton
                             aria-label="削除"
-                            icon={<FiTrash2 />}
                             size="sm"
                             variant="ghost"
                             colorScheme="red"
                             onClick={() => handleRemoveFromBatch(item.id)}
-                          />
-                        </Td>
-                      </Tr>
+                          >
+                              <FiTrash2/>
+                          </IconButton>
+                            </Table.Cell>
+                        </Table.Row>
                     );
                   })}
-                  <Tr fontWeight="bold">
-                    <Td colSpan={3}>合計</Td>
-                    <Td isNumeric>
+                              <Table.Row fontWeight="bold">
+                                  <Table.Cell colSpan={3}>合計</Table.Cell>
+                                  <Table.Cell textAlign="end">
                       {formatCurrency(batchItems.reduce((sum, item) => sum + item.totalAmount, 0))}
-                    </Td>
-                    <Td colSpan={2}></Td>
-                  </Tr>
-                </Tbody>
-              </Table>
-            </TableContainer>
-          </CardBody>
-        </Card>
+                                  </Table.Cell>
+                                  <Table.Cell colSpan={2}></Table.Cell>
+                              </Table.Row>
+                          </Table.Body>
+                      </Table.Root>
+                  </Table.ScrollArea>
+              </Card.Body>
+          </Card.Root>
       )}
 
-      <Card>
-        <CardBody>
+        <Card.Root>
+            <Card.Body>
           <Heading size="md" mb={4}>入出庫履歴</Heading>
           <DataTable
             data={transactions}
@@ -498,8 +473,8 @@ export const StockInOut: React.FC = () => {
             paginated
             pageSize={10}
           />
-        </CardBody>
-      </Card>
+            </Card.Body>
+        </Card.Root>
     </Box>
   );
 };

@@ -1,49 +1,34 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
-  Box,
-  Heading,
-  HStack,
-  Button,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  SimpleGrid,
-  Text,
-  VStack,
-  IconButton,
-  useToast,
-  Badge,
-  Image,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  Flex,
-  InputGroup,
-  InputLeftElement,
-  Input,
+    Badge,
+    Box,
+    Button,
+    Flex,
+    Heading,
+    HStack,
+    Image,
+    Input,
+    InputGroup,
+    InputLeftElement,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    SimpleGrid,
+    Text,
+    useDisclosure,
+    useToast,
+    VStack,
 } from '@chakra-ui/react';
-import {
-  FiPlus,
-  FiEdit,
-  FiTrash2,
-  FiDownload,
-  FiUpload,
-  FiSearch,
-  FiPackage,
-  FiBarcode,
-} from 'react-icons/fi';
-import { DataTable, Column } from '../components/common/DataTable';
-import { FormField } from '../components/common/FormField';
-import { Product, Category } from '../types';
-import { mockProducts, mockCategories, mockSuppliers } from '../data/mockData';
-import { formatCurrency, formatQuantity } from '../utils/formatters';
+import {FiBarcode, FiDownload, FiEdit, FiPlus, FiSearch, FiTrash2, FiUpload,} from 'react-icons/fi';
+import {Column, DataTable} from '../components/common/DataTable';
+import {FormField} from '../components/common/FormField';
+import {Product} from '../types';
+import {mockCategories, mockProducts, mockSuppliers} from '../data/mockData';
+import {formatCurrency, formatQuantity} from '../utils/formatters';
 
 export const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(mockProducts);

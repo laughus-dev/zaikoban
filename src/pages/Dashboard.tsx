@@ -1,55 +1,45 @@
 import React from 'react';
 import {
-  Box,
-  Grid,
-  GridItem,
-  Heading,
-  SimpleGrid,
-  VStack,
-  HStack,
-  Text,
-  Badge,
-  Card,
-  CardHeader,
-  CardBody,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-  useColorModeValue,
-  Flex,
-  Icon,
-  Button,
-  Stack,
+    Badge,
+    Box,
+    Button,
+    Grid,
+    GridItem,
+    Heading,
+    HStack,
+    Icon,
+    SimpleGrid,
+    Stack,
+    Text,
+    VStack,
 } from '@chakra-ui/react';
+import {Card} from '@chakra-ui/react/card';
+import {Alert} from '@chakra-ui/react/alert';
 import {
-  FiPackage,
-  FiDollarSign,
-  FiAlertTriangle,
-  FiClock,
-  FiTrendingUp,
-  FiShoppingCart,
-  FiArrowRight,
+    FiAlertTriangle,
+    FiArrowRight,
+    FiClock,
+    FiDollarSign,
+    FiPackage,
+    FiShoppingCart,
+    FiTrendingUp,
 } from 'react-icons/fi';
-import { StatCard } from '../components/common/StatCard';
-import { DataTable, Column } from '../components/common/DataTable';
-import { mockDashboardStats, mockProducts, mockAlerts } from '../data/mockData';
-import { formatCurrency, formatDate, formatQuantity } from '../utils/formatters';
-import { StockTransaction, Product, Alert as AlertType } from '../types';
+import {StatCard} from '../components/common/StatCard';
+import {type Column, DataTable} from '../components/common/DataTable';
+import {mockAlerts, mockDashboardStats, mockProducts} from '../data/mockData';
+import {formatCurrency, formatDate, formatQuantity} from '../utils/formatters';
+import type {StockTransaction} from '../types';
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
+    CartesianGrid,
+    Cell,
+    Line,
+    LineChart,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
 } from 'recharts';
 
 const inventoryData = [
@@ -71,7 +61,6 @@ const categoryData = [
 ];
 
 export const Dashboard: React.FC = () => {
-  const cardBg = useColorModeValue('white', 'gray.800');
 
   const transactionColumns: Column<StockTransaction>[] = [
     {
@@ -116,13 +105,13 @@ export const Dashboard: React.FC = () => {
 
   return (
     <Box p={{ base: 4, md: 6 }}>
-      <VStack spacing={6} align="stretch">
+        <VStack gap={6} align="stretch">
         <HStack justify="space-between">
           <Heading size="lg">ダッシュボード</Heading>
           <Text color="gray.500">{formatDate(new Date())}</Text>
         </HStack>
 
-        <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={4}>
+            <SimpleGrid columns={{base: 1, sm: 2, lg: 4}} gap={4}>
           <StatCard
             label="在庫総額"
             value={formatCurrency(mockDashboardStats.totalInventoryValue)}
@@ -155,10 +144,10 @@ export const Dashboard: React.FC = () => {
         </SimpleGrid>
 
         {mockAlerts.filter(a => !a.isRead).length > 0 && (
-          <Stack spacing={3}>
+            <Stack gap={3}>
             <Heading size="md">アラート</Heading>
             {mockAlerts.filter(a => !a.isRead).map((alert) => (
-              <Alert
+                <Alert.Root
                 key={alert.id}
                 status={
                   alert.severity === 'error' ? 'error' :
@@ -166,29 +155,29 @@ export const Dashboard: React.FC = () => {
                 }
                 borderRadius="lg"
               >
-                <AlertIcon />
+                    <Alert.Indicator/>
                 <Box flex={1}>
-                  <AlertTitle>{alert.title}</AlertTitle>
-                  <AlertDescription>{alert.message}</AlertDescription>
+                    <Alert.Title>{alert.title}</Alert.Title>
+                    <Alert.Description>{alert.message}</Alert.Description>
                 </Box>
                 <Button size="sm" variant="ghost">
                   確認
                 </Button>
-              </Alert>
+                </Alert.Root>
             ))}
           </Stack>
         )}
 
         <Grid templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }} gap={6}>
           <GridItem>
-            <Card>
-              <CardHeader>
+              <Card.Root>
+                  <Card.Header>
                 <HStack justify="space-between">
                   <Heading size="md">在庫金額推移</Heading>
                   <Icon as={FiTrendingUp} color="green.500" />
                 </HStack>
-              </CardHeader>
-              <CardBody>
+                  </Card.Header>
+                  <Card.Body>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={inventoryData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -204,19 +193,19 @@ export const Dashboard: React.FC = () => {
                     />
                   </LineChart>
                 </ResponsiveContainer>
-              </CardBody>
-            </Card>
+                  </Card.Body>
+              </Card.Root>
           </GridItem>
 
           <GridItem>
-            <Card>
-              <CardHeader>
+              <Card.Root>
+                  <Card.Header>
                 <HStack justify="space-between">
                   <Heading size="md">カテゴリ別在庫比率</Heading>
                   <Icon as={FiPackage} color="blue.500" />
                 </HStack>
-              </CardHeader>
-              <CardBody>
+                  </Card.Header>
+                  <Card.Body>
                 <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
                     <Pie
@@ -236,68 +225,66 @@ export const Dashboard: React.FC = () => {
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
-              </CardBody>
-            </Card>
+                  </Card.Body>
+              </Card.Root>
           </GridItem>
         </Grid>
 
         <Grid templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }} gap={6}>
           <GridItem>
-            <Card>
-              <CardHeader>
+              <Card.Root>
+                  <Card.Header>
                 <HStack justify="space-between">
                   <Heading size="md">最近の取引</Heading>
                   <Button
                     size="sm"
-                    rightIcon={<FiArrowRight />}
                     variant="ghost"
                     colorScheme="brand"
                   >
-                    すべて見る
+                      すべて見る <FiArrowRight/>
                   </Button>
                 </HStack>
-              </CardHeader>
-              <CardBody>
+                  </Card.Header>
+                  <Card.Body>
                 <DataTable
                   data={mockDashboardStats.recentTransactions}
                   columns={transactionColumns}
                   showBorder={false}
                 />
-              </CardBody>
-            </Card>
+                  </Card.Body>
+              </Card.Root>
           </GridItem>
 
           <GridItem>
-            <Card>
-              <CardHeader>
+              <Card.Root>
+                  <Card.Header>
                 <HStack justify="space-between">
                   <Heading size="md">在庫不足商品</Heading>
                   <Button
                     size="sm"
-                    rightIcon={<FiShoppingCart />}
                     colorScheme="brand"
                   >
-                    発注する
+                      発注する <FiShoppingCart/>
                   </Button>
                 </HStack>
-              </CardHeader>
-              <CardBody>
-                <VStack spacing={3} align="stretch">
+                  </Card.Header>
+                  <Card.Body>
+                      <VStack gap={3} align="stretch">
                   {lowStockProducts.slice(0, 5).map((product) => (
                     <HStack
                       key={product.id}
                       p={3}
                       borderRadius="lg"
-                      bg={useColorModeValue('gray.50', 'gray.700')}
+                      bg="gray.50"
                       justify="space-between"
                     >
-                      <VStack align="start" spacing={0}>
+                        <VStack align="start" gap={0}>
                         <Text fontWeight="medium">{product.name}</Text>
                         <Text fontSize="sm" color="gray.500">
                           {product.categoryName}
                         </Text>
                       </VStack>
-                      <VStack align="end" spacing={0}>
+                        <VStack align="end" gap={0}>
                         <Badge colorScheme="orange">
                           残り {product.currentStock} {product.unit}
                         </Badge>
@@ -308,8 +295,8 @@ export const Dashboard: React.FC = () => {
                     </HStack>
                   ))}
                 </VStack>
-              </CardBody>
-            </Card>
+                  </Card.Body>
+              </Card.Root>
           </GridItem>
         </Grid>
       </VStack>

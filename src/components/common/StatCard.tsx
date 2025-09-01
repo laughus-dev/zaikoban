@@ -1,13 +1,7 @@
 import React from 'react';
-import {
-  Box,
-  HStack,
-  Icon,
-  Skeleton,
-  Text,
-} from '@chakra-ui/react';
-import { Stat } from '@chakra-ui/react/stat';
-import type { IconType } from 'react-icons';
+import {Box, HStack, Icon, Skeleton, Text,} from '@chakra-ui/react';
+import {Stat} from '@chakra-ui/react/stat';
+import type {IconType} from 'react-icons';
 
 interface StatCardProps {
   label: string;
@@ -98,7 +92,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         {(change !== undefined || helpText) && (
           <Stat.HelpText mb={0}>
             {change !== undefined && (
-              <HStack spacing={1}>
+                <HStack gap={1}>
                 <Stat.UpIndicator display={change >= 0 ? 'inline' : 'none'} />
                 <Stat.DownIndicator display={change < 0 ? 'inline' : 'none'} />
                 <Text as="span">{Math.abs(change)}%</Text>
