@@ -1,15 +1,7 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  VStack,
-  Heading,
-  Text,
-  Button,
-  Container,
-  Input,
-} from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../config/constants';
+import React, {useState} from 'react';
+import {Box, Button, Container, Heading, Input, Text, VStack,} from '@chakra-ui/react';
+import {useNavigate} from 'react-router-dom';
+import {ROUTES} from '../config/constants';
 
 export const Login: React.FC = () => {
   const [email, setEmail] = useState('manager@zaikoban.jp');
@@ -75,10 +67,9 @@ export const Login: React.FC = () => {
                   colorScheme="orange"
                   size="lg"
                   w="full"
-                  loading={isLoading}
-                  loadingText="ログイン中..."
+                  disabled={isLoading}
                 >
-                  ログイン
+                    {isLoading ? 'ログイン中...' : 'ログイン'}
                 </Button>
 
                 <Box

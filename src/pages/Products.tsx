@@ -3,30 +3,28 @@ import {
     Badge,
     Box,
     Button,
+    createToaster,
+    DialogBody,
+    DialogCloseTrigger,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogRoot,
+    DialogTitle,
     Flex,
     Heading,
     HStack,
     Image,
     Input,
-    InputGroup,
-    InputLeftElement,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
     SimpleGrid,
     Text,
-    useDisclosure,
-    useToast,
-    VStack,
+    VStack
 } from '@chakra-ui/react';
-import {FiBarcode, FiDownload, FiEdit, FiPlus, FiSearch, FiTrash2, FiUpload,} from 'react-icons/fi';
-import {Column, DataTable} from '../components/common/DataTable';
+import {FiCode, FiDownload, FiEdit, FiPlus, FiSearch, FiTrash2, FiUpload,} from 'react-icons/fi';
+import type {Column} from '../components/common/DataTable';
+import {DataTable} from '../components/common/DataTable';
 import {FormField} from '../components/common/FormField';
-import {Product} from '../types';
+import type {Product} from '../types';
 import {mockCategories, mockProducts, mockSuppliers} from '../data/mockData';
 import {formatCurrency, formatQuantity} from '../utils/formatters';
 
@@ -35,8 +33,10 @@ export const Products: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isAddMode, setIsAddMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
+    const [isOpen, setIsOpen] = useState(false);
+    const toast = createToaster({
+        placement: "top"
+    });
 
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '',
@@ -71,11 +71,11 @@ export const Products: React.FC = () => {
       key: 'code',
       label: '商品コード',
       accessor: (item) => (
-        <VStack align="start" spacing={0}>
+          <VStack align="start" gap={0}>
           <Text fontWeight="medium">{item.code}</Text>
           {item.barcode && (
-            <HStack spacing={1}>
-              <FiBarcode size={12} />
+              <HStack gap={1}>
+                  <FiCode size={12}/>
               <Text fontSize="xs" color="gray.500">
                 {item.barcode}
               </Text>
@@ -136,7 +136,7 @@ export const Products: React.FC = () => {
       key: 'stock',
       label: '在庫',
       accessor: (item) => (
-        <VStack align="end" spacing={0}>
+          <VStack align="end" gap={0}>
           <Text>{formatQuantity(item.currentStock, item.unit)}</Text>
           <Text fontSize="xs" color="gray.500">
             {formatQuantity(item.minStock, item.unit)} - {formatQuantity(item.maxStock, item.unit)}
@@ -162,24 +162,22 @@ export const Products: React.FC = () => {
       currentStock: 0,
       supplierId: '',
     });
-    onOpen();
+      setIsOpen(true);
   };
 
   const handleEdit = (product: Product) => {
     setIsAddMode(false);
     setSelectedProduct(product);
     setFormData(product);
-    onOpen();
+      setIsOpen(true);
   };
 
   const handleDelete = (product: Product) => {
     if (window.confirm(`「${product.name}」を削除しますか？`)) {
       setProducts(products.filter(p => p.id !== product.id));
-      toast({
+        toast.create({
         title: '商品を削除しました',
-        status: 'success',
         duration: 3000,
-        isClosable: true,
       });
     }
   };
@@ -191,43 +189,35 @@ export const Products: React.FC = () => {
         id: `product-${Date.now()}`,
       };
       setProducts([...products, newProduct]);
-      toast({
+        toast.create({
         title: '商品を追加しました',
-        status: 'success',
         duration: 3000,
-        isClosable: true,
       });
     } else if (selectedProduct) {
       setProducts(products.map(p => 
         p.id === selectedProduct.id ? { ...p, ...formData } : p
       ));
-      toast({
+        toast.create({
         title: '商品を更新しました',
-        status: 'success',
         duration: 3000,
-        isClosable: true,
       });
     }
-    onClose();
+      setIsOpen(false);
   };
 
   const handleExportCSV = () => {
-    toast({
+      toast.create({
       title: 'CSVエクスポート',
       description: 'CSV形式でエクスポートしました',
-      status: 'info',
       duration: 3000,
-      isClosable: true,
     });
   };
 
   const handleImportCSV = () => {
-    toast({
+      toast.create({
       title: 'CSVインポート',
       description: 'CSV形式でインポートしました',
-      status: 'info',
       duration: 3000,
-      isClosable: true,
     });
   };
 
@@ -279,40 +269,45 @@ export const Products: React.FC = () => {
         <Heading size="lg">商品マスタ</Heading>
         <HStack>
           <Button
-            leftIcon={<FiUpload />}
             variant="outline"
             onClick={handleImportCSV}
           >
-            インポート
+              <FiUpload/> インポート
           </Button>
           <Button
-            leftIcon={<FiDownload />}
             variant="outline"
             onClick={handleExportCSV}
           >
-            エクスポート
+              <FiDownload/> エクスポート
           </Button>
           <Button
-            leftIcon={<FiPlus />}
             colorScheme="primary"
             onClick={handleAdd}
           >
-            新規登録
+              <FiPlus/> 新規登録
           </Button>
         </HStack>
       </Flex>
 
       <Box mb={4}>
-        <InputGroup maxW="400px">
-          <InputLeftElement pointerEvents="none">
-            <FiSearch color="gray.300" />
-          </InputLeftElement>
+          <Box position="relative" maxW="400px">
           <Input
             placeholder="商品名、コード、バーコードで検索"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            paddingStart="40px"
           />
-        </InputGroup>
+              <Box
+                  position="absolute"
+                  left="12px"
+                  top="50%"
+                  transform="translateY(-50%)"
+                  pointerEvents="none"
+                  color="gray.400"
+              >
+                  <FiSearch/>
+              </Box>
+          </Box>
       </Box>
 
       <Box bg="white" borderRadius="lg" shadow="sm">
@@ -326,36 +321,37 @@ export const Products: React.FC = () => {
         />
       </Box>
 
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            {isAddMode ? '商品登録' : '商品編集'}
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+        <DialogRoot open={isOpen} onOpenChange={(details) => setIsOpen(details.open)} size="xl">
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
+                        {isAddMode ? '商品登録' : '商品編集'}
+                    </DialogTitle>
+                    <DialogCloseTrigger/>
+                </DialogHeader>
+                <DialogBody>
+                    <SimpleGrid columns={{base: 1, md: 2}} gap={4}>
               <FormField
                 label="商品コード"
                 name="code"
-                value={formData.code}
-                onChange={(value) => setFormData({ ...formData, code: value })}
+                value={formData.code || ''}
+                onChange={(value) => setFormData({...formData, code: String(value)})}
                 isRequired
                 placeholder="例: P001"
               />
               <FormField
                 label="バーコード"
                 name="barcode"
-                value={formData.barcode}
-                onChange={(value) => setFormData({ ...formData, barcode: value })}
+                value={formData.barcode || ''}
+                onChange={(value) => setFormData({...formData, barcode: String(value)})}
                 placeholder="JANコード等"
-                rightIcon={<FiBarcode />}
+                rightIcon={<FiCode/>}
               />
               <FormField
                 label="商品名"
                 name="name"
-                value={formData.name}
-                onChange={(value) => setFormData({ ...formData, name: value })}
+                value={formData.name || ''}
+                onChange={(value) => setFormData({...formData, name: String(value)})}
                 isRequired
                 placeholder="例: 国産牛ロース"
               />
@@ -363,8 +359,8 @@ export const Products: React.FC = () => {
                 type="select"
                 label="カテゴリ"
                 name="categoryId"
-                value={formData.categoryId}
-                onChange={(value) => setFormData({ ...formData, categoryId: value })}
+                value={formData.categoryId || ''}
+                onChange={(value) => setFormData({...formData, categoryId: String(value)})}
                 options={categoryOptions}
                 isRequired
               />
@@ -372,16 +368,16 @@ export const Products: React.FC = () => {
                 type="select"
                 label="仕入先"
                 name="supplierId"
-                value={formData.supplierId}
-                onChange={(value) => setFormData({ ...formData, supplierId: value })}
+                value={formData.supplierId || ''}
+                onChange={(value) => setFormData({...formData, supplierId: String(value)})}
                 options={supplierOptions}
               />
               <FormField
                 type="select"
                 label="単位"
                 name="unit"
-                value={formData.unit}
-                onChange={(value) => setFormData({ ...formData, unit: value })}
+                value={formData.unit || ''}
+                onChange={(value) => setFormData({...formData, unit: String(value)})}
                 options={unitOptions}
                 isRequired
               />
@@ -389,8 +385,8 @@ export const Products: React.FC = () => {
                 type="number"
                 label="仕入値"
                 name="cost"
-                value={formData.cost}
-                onChange={(value) => setFormData({ ...formData, cost: value })}
+                value={String(formData.cost || 0)}
+                onChange={(value) => setFormData({...formData, cost: Number(value) || 0})}
                 min={0}
                 isRequired
               />
@@ -398,8 +394,8 @@ export const Products: React.FC = () => {
                 type="number"
                 label="販売価格"
                 name="price"
-                value={formData.price}
-                onChange={(value) => setFormData({ ...formData, price: value })}
+                value={String(formData.price || 0)}
+                onChange={(value) => setFormData({...formData, price: Number(value) || 0})}
                 min={0}
                 isRequired
               />
@@ -407,8 +403,8 @@ export const Products: React.FC = () => {
                 type="number"
                 label="最小在庫"
                 name="minStock"
-                value={formData.minStock}
-                onChange={(value) => setFormData({ ...formData, minStock: value })}
+                value={String(formData.minStock || 0)}
+                onChange={(value) => setFormData({...formData, minStock: Number(value) || 0})}
                 min={0}
                 helperText="この値を下回ると発注アラート"
               />
@@ -416,8 +412,8 @@ export const Products: React.FC = () => {
                 type="number"
                 label="最大在庫"
                 name="maxStock"
-                value={formData.maxStock}
-                onChange={(value) => setFormData({ ...formData, maxStock: value })}
+                value={String(formData.maxStock || 0)}
+                onChange={(value) => setFormData({...formData, maxStock: Number(value) || 0})}
                 min={0}
                 helperText="発注時の上限値"
               />
@@ -425,22 +421,22 @@ export const Products: React.FC = () => {
                 type="number"
                 label="現在庫"
                 name="currentStock"
-                value={formData.currentStock}
-                onChange={(value) => setFormData({ ...formData, currentStock: value })}
+                value={String(formData.currentStock || 0)}
+                onChange={(value) => setFormData({...formData, currentStock: Number(value) || 0})}
                 min={0}
               />
             </SimpleGrid>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onClose}>
+                </DialogBody>
+                <DialogFooter>
+                    <Button variant="ghost" mr={3} onClick={() => setIsOpen(false)}>
               キャンセル
             </Button>
             <Button colorScheme="primary" onClick={handleSave}>
               保存
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+                </DialogFooter>
+            </DialogContent>
+        </DialogRoot>
     </Box>
   );
 };

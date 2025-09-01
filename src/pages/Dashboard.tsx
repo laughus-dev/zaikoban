@@ -1,8 +1,10 @@
 import React from 'react';
 import {
+    Alert,
     Badge,
     Box,
     Button,
+    Card,
     Grid,
     GridItem,
     Heading,
@@ -13,8 +15,6 @@ import {
     Text,
     VStack,
 } from '@chakra-ui/react';
-import {Card} from '@chakra-ui/react/card';
-import {Alert} from '@chakra-ui/react/alert';
 import {
     FiAlertTriangle,
     FiArrowRight,

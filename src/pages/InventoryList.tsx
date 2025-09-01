@@ -4,16 +4,22 @@ import {
     Box,
     Button,
     createToaster,
+    DialogBody,
+    DialogContent,
+    DialogHeader,
+    DialogRoot,
+    DialogTitle,
     Heading,
     HStack,
     Image,
     SimpleGrid,
+    TabsContent,
+    TabsList,
+    TabsRoot,
+    TabsTrigger,
     Text,
-    useDisclosure,
     VStack,
 } from '@chakra-ui/react';
-import {Tabs} from '@chakra-ui/react/tabs';
-import {Dialog} from '@chakra-ui/react/dialog';
 import {FiDownload, FiEdit, FiEye, FiPlus, FiShoppingCart, FiTrash2, FiUpload,} from 'react-icons/fi';
 import {type Column, DataTable} from '../components/common/DataTable';
 import {mockCategories, mockProducts} from '../data/mockData';
@@ -24,7 +30,7 @@ import {STOCK_STATUS} from '../config/constants';
 
 export const InventoryList: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const { open, onOpen, onClose } = useDisclosure();
+    const [open, setOpen] = useState(false);
   const toaster = createToaster({
     placement: 'top',
   });
@@ -121,14 +127,13 @@ export const InventoryList: React.FC = () => {
 
   const handleViewDetails = (product: Product) => {
     setSelectedProduct(product);
-    onOpen();
+      setOpen(true);
   };
 
   const handleEdit = (product: Product) => {
     toaster.create({
       title: '編集画面',
       description: `${product.name}の編集画面を開きます`,
-      status: 'info',
       duration: 2000,
     });
   };
@@ -137,7 +142,6 @@ export const InventoryList: React.FC = () => {
     toaster.create({
       title: '削除確認',
       description: `${product.name}を削除しますか？`,
-      status: 'warning',
       duration: 2000,
     });
   };
@@ -146,7 +150,6 @@ export const InventoryList: React.FC = () => {
     toaster.create({
       title: '発注画面',
       description: `${product.name}の発注画面を開きます`,
-      status: 'success',
       duration: 2000,
     });
   };
@@ -189,25 +192,22 @@ export const InventoryList: React.FC = () => {
           <Heading size="lg">在庫一覧</Heading>
           <HStack gap={2}>
             <Button
-              leftIcon={<FiUpload />}
               variant="outline"
               size="sm"
             >
-              インポート
+                <FiUpload/> インポート
             </Button>
             <Button
-              leftIcon={<FiDownload />}
               variant="outline"
               size="sm"
             >
-              エクスポート
+                <FiDownload/> エクスポート
             </Button>
             <Button
-              leftIcon={<FiPlus />}
               colorScheme="brand"
               size="sm"
             >
-              商品追加
+                <FiPlus/> 商品追加
             </Button>
           </HStack>
         </HStack>
@@ -239,61 +239,58 @@ export const InventoryList: React.FC = () => {
           </Box>
         </SimpleGrid>
 
-        <Tabs.Root colorPalette="brand">
-          <Tabs.List>
-            <Tabs.Trigger value="all">すべて</Tabs.Trigger>
+          <TabsRoot colorPalette="brand">
+              <TabsList>
+                  <TabsTrigger value="all">すべて</TabsTrigger>
             {mockCategories.map((category) => (
-              <Tabs.Trigger key={category.id} value={category.id}>
+                <TabsTrigger key={category.id} value={category.id}>
                 <HStack gap={1}>
                   <Text>{category.icon}</Text>
                   <Text>{category.name}</Text>
                 </HStack>
-              </Tabs.Trigger>
+                </TabsTrigger>
             ))}
-          </Tabs.List>
+              </TabsList>
 
-          <Tabs.ContentGroup>
-            <Tabs.Content value="all" px={0}>
-              <DataTable
-                data={mockProducts}
-                columns={columns}
-                searchable
-                searchPlaceholder="商品名・コードで検索"
-                filterable
-                filters={filters}
-                sortable
-                paginated
-                pageSize={10}
-                actions={actions}
-              />
-            </Tabs.Content>
-            {mockCategories.map((category) => (
-              <Tabs.Content key={category.id} value={category.id} px={0}>
-                <DataTable
-                  data={mockProducts.filter(p => p.categoryId === category.id)}
-                  columns={columns}
-                  searchable
-                  searchPlaceholder="商品名・コードで検索"
-                  filterable
-                  filters={filters}
-                  sortable
-                  paginated
-                  pageSize={10}
-                  actions={actions}
-                />
-              </Tabs.Content>
-            ))}
-          </Tabs.ContentGroup>
-        </Tabs.Root>
+              <TabsContent value="all" px={0}>
+                  <DataTable
+                      data={mockProducts}
+                      columns={columns}
+                      searchable
+                      searchPlaceholder="商品名・コードで検索"
+                      filterable
+                      filters={filters}
+                      sortable
+                      paginated
+                      pageSize={10}
+                      actions={actions}
+                  />
+              </TabsContent>
+              {mockCategories.map((category) => (
+                  <TabsContent key={category.id} value={category.id} px={0}>
+                      <DataTable
+                          data={mockProducts.filter(p => p.categoryId === category.id)}
+                          columns={columns}
+                          searchable
+                          searchPlaceholder="商品名・コードで検索"
+                          filterable
+                          filters={filters}
+                          sortable
+                          paginated
+                          pageSize={10}
+                          actions={actions}
+                      />
+                  </TabsContent>
+              ))}
+          </TabsRoot>
       </VStack>
 
-      <Dialog.Root open={open} onOpenChange={(details) => !details.open && onClose()} size="xl">
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content>
-            <Dialog.Header>{selectedProduct?.name}</Dialog.Header>
-            <Dialog.CloseTrigger />
-            <Dialog.Body>
+        <DialogRoot open={open} onOpenChange={(details) => setOpen(details.open)} size="xl">
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>{selectedProduct?.name}</DialogTitle>
+                </DialogHeader>
+                <DialogBody>
             {selectedProduct && (
               <VStack gap={4} align="stretch">
                 <Image
@@ -355,16 +352,9 @@ export const InventoryList: React.FC = () => {
                 </SimpleGrid>
               </VStack>
             )}
-            </Dialog.Body>
-            <Dialog.Footer>
-              <Button variant="ghost" mr={3} onClick={onClose}>
-                閉じる
-              </Button>
-              <Button colorScheme="brand">編集</Button>
-            </Dialog.Footer>
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Dialog.Root>
+                </DialogBody>
+            </DialogContent>
+        </DialogRoot>
     </Box>
   );
 };

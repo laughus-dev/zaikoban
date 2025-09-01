@@ -3,25 +3,30 @@ import {
     Badge,
     Box,
     Button,
+    Card,
     createToaster,
+    Field,
     Flex,
-    FormControl,
-    FormLabel,
     Heading,
     HStack,
     IconButton,
+    Input,
     SimpleGrid,
+    Table,
+    TabsContent,
+    TabsList,
+    TabsRoot,
+    TabsTrigger,
     Text,
     Textarea,
     VStack,
 } from '@chakra-ui/react';
-import {Tabs} from '@chakra-ui/react/tabs';
-import {Card} from '@chakra-ui/react/card';
-import {Table} from '@chakra-ui/react/table';
 import {NativeSelect} from '@chakra-ui/react/native-select';
-import {FiMinus, FiPlus, FiRefreshCw, FiSave, FiTrash2,} from 'react-icons/fi';
-import {Column, DataTable} from '../components/common/DataTable';
-import {StockTransaction} from '../types';
+import {FiMinus, FiPlus, FiRefreshCw, FiTrash2,} from 'react-icons/fi';
+import type {Column} from '../components/common/DataTable';
+import {DataTable} from '../components/common/DataTable';
+import {FormField} from '../components/common/FormField';
+import type {StockTransaction} from '../types';
 import {mockProducts, mockSuppliers} from '../data/mockData';
 import {formatCurrency, formatDate, formatQuantity} from '../utils/formatters';
 
@@ -42,7 +47,7 @@ export const StockInOut: React.FC = () => {
   const [quantity, setQuantity] = useState<number>(0);
   const [unitPrice, setUnitPrice] = useState<number>(0);
   const [note, setNote] = useState<string>('');
-    const [toaster] = createToaster({
+    const toaster = createToaster({
         placement: 'top',
     });
 
@@ -95,7 +100,6 @@ export const StockInOut: React.FC = () => {
         toaster.create({
         title: 'エラー',
         description: '商品と数量を入力してください',
-        status: 'error',
         duration: 3000,
       });
       return;
@@ -122,7 +126,6 @@ export const StockInOut: React.FC = () => {
       toaster.create({
       title: '追加しました',
       description: `${product.name}を追加しました`,
-      status: 'success',
       duration: 2000,
     });
   };
@@ -136,7 +139,6 @@ export const StockInOut: React.FC = () => {
         toaster.create({
         title: 'エラー',
         description: '商品を追加してください',
-        status: 'error',
         duration: 3000,
       });
       return;
@@ -165,7 +167,6 @@ export const StockInOut: React.FC = () => {
       toaster.create({
       title: transactionType === 'in' ? '入庫登録完了' : '出庫登録完了',
       description: `${batchItems.length}件の商品を登録しました`,
-      status: 'success',
       duration: 3000,
     });
   };
@@ -232,105 +233,108 @@ export const StockInOut: React.FC = () => {
     label: `${p.code} - ${p.name}`,
   }));
 
-  const supplierOptions = mockSuppliers.map(s => ({
-    value: s.id,
-    label: s.name,
-  }));
 
   return (
     <Box p={6}>
       <Heading size="lg" mb={6}>入出庫登録</Heading>
 
-        <Tabs.Root
+        <TabsRoot
             value={transactionType === 'in' ? 'in' : 'out'}
-            onValueChange={(details) => setTransactionType(details.value as 'in' | 'out')}
+            onValueChange={(details: any) => setTransactionType(details.value as 'in' | 'out')}
             colorPalette="primary"
-      >
-            <Tabs.List>
-                <Tabs.Trigger value="in">
+        >
+            <TabsList>
+                <TabsTrigger value="in">
             <HStack>
               <FiPlus />
               <Text>入庫</Text>
             </HStack>
-                </Tabs.Trigger>
-                <Tabs.Trigger value="out">
+                </TabsTrigger>
+                <TabsTrigger value="out">
             <HStack>
               <FiMinus />
               <Text>出庫</Text>
             </HStack>
-                </Tabs.Trigger>
-            </Tabs.List>
+                </TabsTrigger>
+            </TabsList>
 
-            <Tabs.ContentGroup>
-                <Tabs.Content value="in">
+            <TabsContent value="in">
                     <Card.Root mb={6}>
                         <Card.Body>
                             <VStack gap={4} align="stretch">
-                  <FormField
-                    type="select"
-                    label="仕入先"
-                    name="supplierId"
-                    value={selectedSupplierId}
-                    onChange={setSelectedSupplierId}
-                    options={supplierOptions}
-                    placeholder="仕入先を選択"
-                  />
+                                <Field.Root>
+                                    <Field.Label>仕入先</Field.Label>
+                                    <NativeSelect.Root
+                                        value={selectedSupplierId}
+                                        onValueChange={(details: any) => setSelectedSupplierId(details.value)}
+                                    >
+                                        <NativeSelect.Field placeholder="仕入先を選択"/>
+                                        {mockSuppliers.map((supplier) => (
+                                            <option key={supplier.id} value={supplier.id}>
+                                                {supplier.name}
+                                            </option>
+                                        ))}
+                                    </NativeSelect.Root>
+                                </Field.Root>
 
                                 <SimpleGrid columns={{base: 1, md: 2, lg: 4}} gap={4}>
-                    <FormField
-                      type="select"
-                      label="商品"
-                      name="productId"
-                      value={selectedProductId}
-                      onChange={setSelectedProductId}
-                      options={productOptions}
-                      placeholder="商品を選択"
-                      isRequired
-                    />
-                    <FormField
-                      type="number"
-                      label="数量"
-                      name="quantity"
-                      value={quantity}
-                      onChange={setQuantity}
-                      min={0}
-                      step={0.1}
-                      isRequired
-                    />
-                    <FormField
-                      type="number"
-                      label="仕入単価"
-                      name="unitPrice"
-                      value={unitPrice}
-                      onChange={setUnitPrice}
-                      min={0}
-                      isRequired
-                    />
-                    <FormControl>
-                      <FormLabel>備考</FormLabel>
+                                    <Field.Root>
+                                        <Field.Label>商品 *</Field.Label>
+                                        <NativeSelect.Root
+                                            value={selectedProductId}
+                                            onValueChange={(details: any) => setSelectedProductId(details.value)}
+                                        >
+                                            <NativeSelect.Field placeholder="商品を選択"/>
+                                            {mockProducts.map((product) => (
+                                                <option key={product.id} value={product.id}>
+                                                    {product.name}
+                                                </option>
+                                            ))}
+                                        </NativeSelect.Root>
+                                    </Field.Root>
+                                    <Field.Root>
+                                        <Field.Label>数量 *</Field.Label>
+                                        <Input
+                                            type="number"
+                                            value={quantity}
+                                            onChange={(e) => setQuantity(Number(e.target.value))}
+                                            min={0}
+                                            step={0.1}
+                                        />
+                                    </Field.Root>
+                                    <Field.Root>
+                                        <Field.Label>仕入単価 *</Field.Label>
+                                        <Input
+                                            type="number"
+                                            value={unitPrice}
+                                            onChange={(e) => setUnitPrice(Number(e.target.value))}
+                                            min={0}
+                                        />
+                                    </Field.Root>
+                                    <Field.Root>
+                                        <Field.Label>備考</Field.Label>
                       <Textarea
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
                         placeholder="備考を入力"
                         rows={1}
                       />
-                    </FormControl>
+                                    </Field.Root>
                   </SimpleGrid>
 
                   <Button
-                      startIcon={<FiPlus/>}
-                    colorScheme="blue"
+                      colorScheme="blue"
                     onClick={handleAddToBatch}
                     alignSelf="flex-start"
                   >
-                    リストに追加
+                      <FiPlus/> リストに追加
                   </Button>
                 </VStack>
                         </Card.Body>
                     </Card.Root>
-                </Tabs.Content>
+            </TabsContent>
 
-                <Tabs.Content value="out">
+            <TabsContent value="out">
                     <Card.Root mb={6}>
                         <Card.Body>
                             <VStack gap={4} align="stretch">
@@ -355,11 +359,11 @@ export const StockInOut: React.FC = () => {
                       step={0.1}
                       isRequired
                     />
-                    <FormControl>
-                      <FormLabel>理由</FormLabel>
+                                    <Field.Root>
+                                        <Field.Label>理由</Field.Label>
                         <NativeSelect.Root
                         value={note}
-                        onValueChange={(details) => setNote(details.value)}
+                        onValueChange={(details: any) => setNote(details.value)}
                       >
                             <NativeSelect.Field placeholder="理由を選択">
                         <option value="料理使用">料理使用</option>
@@ -368,23 +372,21 @@ export const StockInOut: React.FC = () => {
                         <option value="その他">その他</option>
                             </NativeSelect.Field>
                         </NativeSelect.Root>
-                    </FormControl>
+                                    </Field.Root>
                   </SimpleGrid>
 
                   <Button
-                      startIcon={<FiPlus/>}
-                    colorScheme="blue"
+                      colorScheme="blue"
                     onClick={handleAddToBatch}
                     alignSelf="flex-start"
                   >
-                    リストに追加
+                      <FiPlus/> リストに追加
                   </Button>
                 </VStack>
                         </Card.Body>
                     </Card.Root>
-                </Tabs.Content>
-            </Tabs.ContentGroup>
-        </Tabs.Root>
+            </TabsContent>
+        </TabsRoot>
 
       {batchItems.length > 0 && (
           <Card.Root mb={6}>
@@ -393,16 +395,14 @@ export const StockInOut: React.FC = () => {
               <Heading size="md">登録予定リスト</Heading>
               <HStack>
                 <Button
-                    startIcon={<FiRefreshCw/>}
-                  variant="outline"
+                    variant="outline"
                   size="sm"
                   onClick={() => setBatchItems([])}
                 >
-                  クリア
+                    <FiRefreshCw/> クリア
                 </Button>
                 <Button
-                    startIcon={<FiSave/>}
-                  colorScheme="primary"
+                    colorScheme="primary"
                   size="sm"
                   onClick={handleSaveBatch}
                 >

@@ -1,45 +1,31 @@
 import React, {useState} from 'react';
 import {
-    Alert,
     AlertDescription,
-    AlertIcon,
     AlertTitle,
     Badge,
     Box,
     Button,
-    Card,
-    CardBody,
-    CardHeader,
-    Divider,
+    createToaster,
     Flex,
     Heading,
     HStack,
     Icon,
     IconButton,
-    Progress,
-    Select,
+    NativeSelectField,
+    NativeSelectRoot,
     SimpleGrid,
-    Stat,
-    StatArrow,
+    StatDownTrend,
     StatHelpText,
     StatLabel,
-    StatNumber,
-    Tab,
-    Table,
-    TableContainer,
+    StatRoot,
+    StatUpTrend,
+    StatValueText,
     TabList,
-    TabPanel,
-    TabPanels,
-    Tabs,
-    Tbody,
-    Td,
     Text,
-    Th,
-    Thead,
-    Tooltip,
-    Tr,
-    useColorModeValue,
-    useToast,
+    TooltipContent,
+    TooltipPositioner,
+    TooltipRoot,
+    TooltipTrigger,
     VStack,
 } from '@chakra-ui/react';
 import {
@@ -114,18 +100,17 @@ const turnoverRate = [
 
 export const Reports: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('month');
-  const toast = useToast();
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
+    const toast = createToaster({
+        placement: 'top',
+    });
+    const bgColor = 'white';
+    const borderColor = 'gray.200';
 
   const handleExport = (type: string) => {
-    toast({
+      toast.create({
       title: `${type}形式でダウンロード`,
       description: 'レポートのダウンロードを開始しました',
-      status: 'success',
       duration: 3000,
-      isClosable: true,
-      position: 'top-right',
     });
   };
 
@@ -139,118 +124,126 @@ export const Reports: React.FC = () => {
   return (
     <Box p={{ base: 4, md: 6 }} maxW="1400px" mx="auto">
       {/* ヘッダー */}
-      <VStack align="stretch" spacing={6}>
+        <VStack align="stretch" gap={6}>
         <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
-          <VStack align="start" spacing={1}>
+            <VStack align="start" gap={1}>
             <Heading size="lg" color="gray.800">
               <Icon as={FiBarChart2} mr={2} />
               レポート・分析
             </Heading>
             <Text color="gray.600">売上や在庫の状況を分かりやすく表示します</Text>
           </VStack>
-          
-          <HStack spacing={3}>
-            <Select 
-              value={selectedPeriod} 
-              onChange={(e) => setSelectedPeriod(e.target.value)}
-              w="150px"
-              bg={bgColor}
-            >
-              <option value="day">日別</option>
-              <option value="week">週別</option>
-              <option value="month">月別</option>
-              <option value="year">年別</option>
-            </Select>
-            
-            <Tooltip label="PDFでダウンロード">
-              <IconButton
-                aria-label="PDF出力"
-                icon={<FiDownload />}
-                colorScheme="orange"
-                onClick={() => handleExport('PDF')}
-              />
-            </Tooltip>
-            
-            <Tooltip label="印刷">
-              <IconButton
-                aria-label="印刷"
-                icon={<FiPrinter />}
-                variant="outline"
-                onClick={() => handleExport('印刷')}
-              />
-            </Tooltip>
-            
-            <Tooltip label="メールで送信">
-              <IconButton
-                aria-label="メール送信"
-                icon={<FiMail />}
-                variant="outline"
-                onClick={() => handleExport('メール')}
-              />
-            </Tooltip>
+
+            <HStack gap={3}>
+                <NativeSelectRoot w="150px">
+                    <NativeSelectField bg={bgColor} value={selectedPeriod}
+                                       onChange={(e) => setSelectedPeriod(e.target.value)}>
+                        <option value="day">日別</option>
+                        <option value="week">週別</option>
+                        <option value="month">月別</option>
+                        <option value="year">年別</option>
+                    </NativeSelectField>
+                </NativeSelectRoot>
+
+                <TooltipRoot>
+                    <TooltipTrigger asChild>
+                        <IconButton
+                            aria-label="PDF出力"
+                            colorScheme="orange"
+                            onClick={() => handleExport('PDF')}
+                        >
+                            <FiDownload/>
+                        </IconButton>
+                    </TooltipTrigger>
+                    <TooltipPositioner>
+                        <TooltipContent>PDFでダウンロード</TooltipContent>
+                    </TooltipPositioner>
+                </TooltipRoot>
+
+                <TooltipRoot>
+                    <TooltipTrigger asChild>
+                        <IconButton
+                            aria-label="印刷"
+                            variant="outline"
+                            onClick={() => handleExport('印刷')}
+                        >
+                            <FiPrinter/>
+                        </IconButton>
+                    </TooltipTrigger>
+                    <TooltipPositioner>
+                        <TooltipContent>印刷</TooltipContent>
+                    </TooltipPositioner>
+                </TooltipRoot>
+
+                <TooltipRoot>
+                    <TooltipTrigger asChild>
+                        <IconButton
+                            aria-label="メール送信"
+                            variant="outline"
+                            onClick={() => handleExport('メール')}
+                        >
+                            <FiMail/>
+                        </IconButton>
+                    </TooltipTrigger>
+                    <TooltipPositioner>
+                        <TooltipContent>メールで送信</TooltipContent>
+                    </TooltipPositioner>
+                </TooltipRoot>
           </HStack>
         </Flex>
 
         {/* サマリーカード */}
-        <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={4}>
-          <Card bg={bgColor} borderWidth={1} borderColor={borderColor}>
-            <CardBody>
-              <Stat>
-                <StatLabel color="gray.600">今月の売上</StatLabel>
-                <StatNumber fontSize="2xl" color="orange.500">
-                  {formatCurrency(4200000)}
-                </StatNumber>
-                <StatHelpText>
-                  <StatArrow type="increase" />
-                  前月比 10.5%
-                </StatHelpText>
-              </Stat>
-            </CardBody>
-          </Card>
+            <SimpleGrid columns={{base: 1, sm: 2, lg: 4}} gap={4}>
+                <Box bg={bgColor} borderWidth={1} borderColor={borderColor} p={6} borderRadius="lg">
+                    <StatRoot>
+                        <StatLabel color="gray.600">今月の売上</StatLabel>
+                        <StatValueText fontSize="2xl" color="orange.500">
+                            {formatCurrency(4200000)}
+                        </StatValueText>
+                        <StatHelpText>
+                            <StatUpTrend/>
+                            前月比 10.5%
+                        </StatHelpText>
+                    </StatRoot>
+                </Box>
 
-          <Card bg={bgColor} borderWidth={1} borderColor={borderColor}>
-            <CardBody>
-              <Stat>
-                <StatLabel color="gray.600">在庫回転率</StatLabel>
-                <StatNumber fontSize="2xl" color="blue.500">
-                  9.5回
-                </StatNumber>
-                <StatHelpText>
-                  <StatArrow type="decrease" />
-                  目標まであと2.5回
-                </StatHelpText>
-              </Stat>
-            </CardBody>
-          </Card>
+                <Box bg={bgColor} borderWidth={1} borderColor={borderColor} p={6} borderRadius="lg">
+                    <StatRoot>
+                        <StatLabel color="gray.600">在庫回転率</StatLabel>
+                        <StatValueText fontSize="2xl" color="blue.500">
+                            9.5回
+                        </StatValueText>
+                        <StatHelpText>
+                            <StatDownTrend/>
+                            目標まであと2.5回
+                        </StatHelpText>
+                    </StatRoot>
+                </Box>
 
-          <Card bg={bgColor} borderWidth={1} borderColor={borderColor}>
-            <CardBody>
-              <Stat>
-                <StatLabel color="gray.600">在庫金額</StatLabel>
-                <StatNumber fontSize="2xl" color="green.500">
-                  {formatCurrency(12500000)}
-                </StatNumber>
-                <StatHelpText>
-                  適正範囲内
-                </StatHelpText>
-              </Stat>
-            </CardBody>
-          </Card>
+                <Box bg={bgColor} borderWidth={1} borderColor={borderColor} p={6} borderRadius="lg">
+                    <StatRoot>
+                        <StatLabel color="gray.600">在庫金額</StatLabel>
+                        <StatValueText fontSize="2xl" color="green.500">
+                            {formatCurrency(12500000)}
+                        </StatValueText>
+                        <StatHelpText>
+                            適正範囲内
+                        </StatHelpText>
+                    </StatRoot>
+                </Box>
 
-          <Card bg={bgColor} borderWidth={1} borderColor={borderColor}>
-            <CardBody>
-              <Stat>
-                <StatLabel color="gray.600">廃棄ロス率</StatLabel>
-                <StatNumber fontSize="2xl" color="red.500">
-                  2.3%
-                </StatNumber>
-                <StatHelpText>
-                  <StatArrow type="increase" />
-                  要改善
-                </StatHelpText>
-              </Stat>
-            </CardBody>
-          </Card>
+                <Box bg={bgColor} borderWidth={1} borderColor={borderColor} p={6} borderRadius="lg">
+                    <StatRoot>
+                        <StatLabel color="gray.600">廃棄ロス率</StatLabel>
+                        <StatValueText fontSize="2xl" color="red.500">
+                            2.3%
+                        </StatValueText>
+                        <StatHelpText>
+                            <StatUpTrend/>
+                            要改善
+                        </StatHelpText>
+                    </StatRoot>
+                </Box>
         </SimpleGrid>
 
         {/* メインコンテンツ */}
@@ -265,13 +258,13 @@ export const Reports: React.FC = () => {
           <TabPanels>
             {/* 売上分析タブ */}
             <TabPanel>
-              <VStack spacing={6} align="stretch">
-                <Card bg={bgColor}>
-                  <CardHeader>
+                <VStack gap={6} align="stretch">
+                    <Box bg={bgColor} borderWidth={1} borderColor={borderColor} borderRadius="lg">
+                        <Box p={6} borderBottomWidth={1} borderColor={borderColor}>
                     <Heading size="md">月別売上推移</Heading>
                     <Text color="gray.600" fontSize="sm">今年と前年の比較</Text>
-                  </CardHeader>
-                  <CardBody>
+                        </Box>
+                        <Box p={6}>
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={salesData}>
                         <CartesianGrid strokeDasharray="3 3" />
@@ -285,15 +278,15 @@ export const Reports: React.FC = () => {
                         <Bar dataKey="前年" fill="#FFB08A" radius={[8, 8, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
-                  </CardBody>
-                </Card>
+                        </Box>
+                    </Box>
 
-                <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
-                  <Card bg={bgColor}>
-                    <CardHeader>
+                    <SimpleGrid columns={{base: 1, lg: 2}} gap={6}>
+                        <Box bg={bgColor} borderWidth={1} borderColor={borderColor} borderRadius="lg">
+                            <Box p={6} borderBottomWidth={1} borderColor={borderColor}>
                       <Heading size="md">カテゴリ別売上構成</Heading>
-                    </CardHeader>
-                    <CardBody>
+                            </Box>
+                            <Box p={6}>
                       <ResponsiveContainer width="100%" height={250}>
                         <PieChart>
                           <Pie
@@ -313,15 +306,15 @@ export const Reports: React.FC = () => {
                           <RechartsTooltip />
                         </PieChart>
                       </ResponsiveContainer>
-                    </CardBody>
-                  </Card>
+                            </Box>
+                        </Box>
 
-                  <Card bg={bgColor}>
-                    <CardHeader>
+                        <Box bg={bgColor} borderWidth={1} borderColor={borderColor} borderRadius="lg">
+                            <Box p={6} borderBottomWidth={1} borderColor={borderColor}>
                       <Heading size="md">売上目標達成率</Heading>
-                    </CardHeader>
-                    <CardBody>
-                      <VStack spacing={4} align="stretch">
+                            </Box>
+                            <Box p={6}>
+                                <VStack gap={4} align="stretch">
                         <Box>
                           <Flex justify="space-between" mb={2}>
                             <Text fontWeight="bold">今月</Text>
@@ -344,20 +337,20 @@ export const Reports: React.FC = () => {
                           <Progress value={78} colorScheme="blue" size="lg" borderRadius="full" />
                         </Box>
                       </VStack>
-                    </CardBody>
-                  </Card>
+                            </Box>
+                        </Box>
                 </SimpleGrid>
               </VStack>
             </TabPanel>
 
             {/* 在庫分析タブ */}
             <TabPanel>
-              <VStack spacing={6} align="stretch">
-                <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6}>
+                <VStack gap={6} align="stretch">
+                    <SimpleGrid columns={{base: 1, lg: 3}} gap={6}>
                   {inventoryEfficiency.map((item) => (
                     <Card key={item.category} bg={bgColor}>
                       <CardBody>
-                        <VStack spacing={4}>
+                          <VStack gap={4}>
                           <Icon 
                             as={FiPackage} 
                             fontSize="3xl" 
@@ -387,7 +380,7 @@ export const Reports: React.FC = () => {
                     <Text color="gray.600" fontSize="sm">目標値との比較</Text>
                   </CardHeader>
                   <CardBody>
-                    <HStack spacing={8} justify="center">
+                      <HStack gap={8} justify="center">
                       <VStack>
                         <Box position="relative" width="150px" height="150px">
                           <ResponsiveContainer width="100%" height="100%">
@@ -406,7 +399,7 @@ export const Reports: React.FC = () => {
                             top="50%" 
                             left="50%" 
                             transform="translate(-50%, -50%)"
-                            spacing={0}
+                            gap={0}
                           >
                             <Text fontSize="2xl" fontWeight="bold">9.5</Text>
                             <Text fontSize="sm" color="gray.600">回/年</Text>
@@ -415,7 +408,7 @@ export const Reports: React.FC = () => {
                         <Text fontWeight="bold">現在の回転率</Text>
                       </VStack>
 
-                      <VStack align="start" spacing={3}>
+                          <VStack align="start" gap={3}>
                         <HStack>
                           <Badge colorScheme="purple">目標</Badge>
                           <Text fontWeight="bold">12回/年</Text>
@@ -448,7 +441,7 @@ export const Reports: React.FC = () => {
 
             {/* 商品ランキングタブ */}
             <TabPanel>
-              <VStack spacing={6} align="stretch">
+                <VStack gap={6} align="stretch">
                 <Card bg={bgColor}>
                   <CardHeader>
                     <Heading size="md">売上TOP5商品</Heading>
@@ -503,13 +496,13 @@ export const Reports: React.FC = () => {
                   </CardBody>
                 </Card>
 
-                <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
+                    <SimpleGrid columns={{base: 1, lg: 2}} gap={6}>
                   <Card bg={bgColor}>
                     <CardHeader>
                       <Heading size="md">急上昇商品 🔥</Heading>
                     </CardHeader>
                     <CardBody>
-                      <VStack align="stretch" spacing={3}>
+                        <VStack align="stretch" gap={3}>
                         <HStack justify="space-between" p={3} bg="orange.50" borderRadius="lg">
                           <HStack>
                             <Badge colorScheme="red">NEW</Badge>
@@ -534,7 +527,7 @@ export const Reports: React.FC = () => {
                       <Heading size="md">要注意商品 ⚠️</Heading>
                     </CardHeader>
                     <CardBody>
-                      <VStack align="stretch" spacing={3}>
+                        <VStack align="stretch" gap={3}>
                         <HStack justify="space-between" p={3} bg="red.50" borderRadius="lg">
                           <Text fontWeight="bold">冷凍エビ（大）</Text>
                           <Text color="red.500" fontWeight="bold">-45%</Text>
@@ -556,7 +549,7 @@ export const Reports: React.FC = () => {
 
             {/* 改善提案タブ */}
             <TabPanel>
-              <VStack spacing={6} align="stretch">
+                <VStack gap={6} align="stretch">
                 <Alert status="success" borderRadius="lg">
                   <AlertIcon />
                   <Box>
@@ -567,7 +560,7 @@ export const Reports: React.FC = () => {
                   </Box>
                 </Alert>
 
-                <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
+                    <SimpleGrid columns={{base: 1, lg: 2}} gap={6}>
                   <Card bg={bgColor} borderColor="orange.200" borderWidth={2}>
                     <CardHeader bg="orange.50">
                       <HStack>
@@ -576,7 +569,7 @@ export const Reports: React.FC = () => {
                       </HStack>
                     </CardHeader>
                     <CardBody>
-                      <VStack align="stretch" spacing={3}>
+                        <VStack align="stretch" gap={3}>
                         <Text>📌 <strong>野菜類</strong>の発注頻度を週3回に増やしましょう</Text>
                         <Text color="gray.600" fontSize="sm">
                           鮮度を保ちながら廃棄ロスを20%削減できます
@@ -601,7 +594,7 @@ export const Reports: React.FC = () => {
                       </HStack>
                     </CardHeader>
                     <CardBody>
-                      <VStack align="stretch" spacing={3}>
+                        <VStack align="stretch" gap={3}>
                         <Text>💡 <strong>セット販売</strong>を導入してみましょう</Text>
                         <Text color="gray.600" fontSize="sm">
                           人気商品の組み合わせで客単価を25%アップ
@@ -626,7 +619,7 @@ export const Reports: React.FC = () => {
                       </HStack>
                     </CardHeader>
                     <CardBody>
-                      <VStack align="stretch" spacing={3}>
+                        <VStack align="stretch" gap={3}>
                         <Text>🎯 <strong>ABC分析</strong>の活用</Text>
                         <Text color="gray.600" fontSize="sm">
                           売れ筋商品に在庫を集中させて効率化
@@ -651,7 +644,7 @@ export const Reports: React.FC = () => {
                       </HStack>
                     </CardHeader>
                     <CardBody>
-                      <VStack align="stretch" spacing={3}>
+                        <VStack align="stretch" gap={3}>
                         <Text>⚠️ <strong>期限管理</strong>の強化が必要です</Text>
                         <Text color="gray.600" fontSize="sm">
                           アラート設定で廃棄ロスを50%削減可能
@@ -671,7 +664,7 @@ export const Reports: React.FC = () => {
 
                 <Card bg="blue.50" borderColor="blue.300" borderWidth={2}>
                   <CardBody>
-                    <HStack spacing={4}>
+                      <HStack gap={4}>
                       <Icon as={FiInfo} color="blue.500" fontSize="3xl" />
                       <VStack align="start" flex={1}>
                         <Text fontWeight="bold" color="blue.700">

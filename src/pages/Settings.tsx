@@ -137,7 +137,6 @@ export const Settings: React.FC = () => {
     toast({
       title: '設定を保存しました',
       description: `${section}の設定が正常に保存されました`,
-      status: 'success',
       duration: 3000,
       isClosable: true,
       position: 'top-right',
@@ -161,8 +160,8 @@ export const Settings: React.FC = () => {
   return (
     <Box p={{ base: 4, md: 6 }} maxW="1400px" mx="auto">
       {/* ヘッダー */}
-      <VStack align="stretch" spacing={6}>
-        <VStack align="start" spacing={1}>
+        <VStack align="stretch" gap={6}>
+            <VStack align="start" gap={1}>
           <Heading size="lg" color="gray.800">
             <Icon as={FiSettings} mr={2} />
             設定
@@ -188,9 +187,9 @@ export const Settings: React.FC = () => {
             <TabPanel>
               <Card bg={bgColor}>
                 <CardBody>
-                  <VStack spacing={6} align="stretch">
+                    <VStack gap={6} align="stretch">
                     <Center>
-                      <VStack spacing={4}>
+                        <VStack gap={4}>
                         <Avatar size="2xl" name="田中 太郎" bg="orange.500" />
                         <Button leftIcon={<FiCamera />} size="sm" colorScheme="orange" variant="outline">
                           写真を変更
@@ -198,7 +197,7 @@ export const Settings: React.FC = () => {
                       </VStack>
                     </Center>
 
-                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                        <SimpleGrid columns={{base: 1, md: 2}} gap={4}>
                       <FormControl>
                         <FormLabel>名前</FormLabel>
                         <Input defaultValue="田中 太郎" />
@@ -226,7 +225,7 @@ export const Settings: React.FC = () => {
 
                     <Divider />
 
-                    <VStack align="stretch" spacing={3}>
+                        <VStack align="stretch" gap={3}>
                       <Heading size="sm">パスワード変更</Heading>
                       <FormControl>
                         <FormLabel>現在のパスワード</FormLabel>
@@ -261,8 +260,8 @@ export const Settings: React.FC = () => {
             <TabPanel>
               <Card bg={bgColor}>
                 <CardBody>
-                  <VStack spacing={6} align="stretch">
-                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                    <VStack gap={6} align="stretch">
+                        <SimpleGrid columns={{base: 1, md: 2}} gap={4}>
                       <FormControl>
                         <FormLabel>店舗名</FormLabel>
                         <Input 
@@ -310,7 +309,7 @@ export const Settings: React.FC = () => {
                       
                       <FormControl gridColumn={{ md: 'span 2' }}>
                         <FormLabel>定休日</FormLabel>
-                        <HStack spacing={3} flexWrap="wrap">
+                          <HStack gap={3} flexWrap="wrap">
                           {['月', '火', '水', '木', '金', '土', '日'].map((day) => (
                             <Button 
                               key={day} 
@@ -364,7 +363,7 @@ export const Settings: React.FC = () => {
 
             {/* 商品設定 */}
             <TabPanel>
-              <VStack spacing={6} align="stretch">
+                <VStack gap={6} align="stretch">
                 {/* カテゴリ管理 */}
                 <Card bg={bgColor}>
                   <CardHeader>
@@ -381,11 +380,11 @@ export const Settings: React.FC = () => {
                     </HStack>
                   </CardHeader>
                   <CardBody>
-                    <SimpleGrid columns={{ base: 2, md: 3, lg: 5 }} spacing={4}>
+                      <SimpleGrid columns={{base: 2, md: 3, lg: 5}} gap={4}>
                       {mockCategories.map((category) => (
                         <Card key={category.id} variant="outline">
                           <CardBody>
-                            <VStack spacing={2}>
+                              <VStack gap={2}>
                               <Text fontSize="2xl">{category.icon}</Text>
                               <Text fontWeight="bold">{category.name}</Text>
                               <Badge colorScheme={category.color}>{category.count}商品</Badge>
@@ -447,7 +446,7 @@ export const Settings: React.FC = () => {
                               </Td>
                               <Td>{unit.type}</Td>
                               <Td>
-                                <HStack spacing={2}>
+                                  <HStack gap={2}>
                                   <IconButton
                                     aria-label="編集"
                                     icon={<FiEdit2 />}
@@ -477,7 +476,7 @@ export const Settings: React.FC = () => {
                     <Heading size="md">在庫アラート設定</Heading>
                   </CardHeader>
                   <CardBody>
-                    <VStack spacing={6} align="stretch">
+                      <VStack gap={6} align="stretch">
                       <FormControl>
                         <FormLabel>
                           期限切れアラート（{alertDays}日前）
@@ -540,7 +539,7 @@ export const Settings: React.FC = () => {
             <TabPanel>
               <Card bg={bgColor}>
                 <CardBody>
-                  <VStack spacing={6} align="stretch">
+                    <VStack gap={6} align="stretch">
                     <Alert status="info" borderRadius="lg">
                       <AlertIcon />
                       <Box>
@@ -551,7 +550,7 @@ export const Settings: React.FC = () => {
                       </Box>
                     </Alert>
 
-                    <VStack align="stretch" spacing={4}>
+                        <VStack align="stretch" gap={4}>
                       <HStack justify="space-between" p={4} bg="orange.50" borderRadius="lg">
                         <HStack>
                           <Icon as={FiPackage} color="orange.500" fontSize="xl" />
@@ -645,9 +644,9 @@ export const Settings: React.FC = () => {
 
                     <Divider />
 
-                    <VStack align="stretch" spacing={3}>
+                        <VStack align="stretch" gap={3}>
                       <Heading size="sm">通知方法</Heading>
-                      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+                            <SimpleGrid columns={{base: 1, md: 3}} gap={4}>
                         <HStack p={3} borderWidth={1} borderRadius="lg" borderColor="orange.300" bg="orange.50">
                           <Icon as={FiMonitor} color="orange.500" />
                           <Text>画面通知</Text>
@@ -684,11 +683,11 @@ export const Settings: React.FC = () => {
             <TabPanel>
               <Card bg={bgColor}>
                 <CardBody>
-                  <VStack spacing={6} align="stretch">
-                    <VStack align="stretch" spacing={4}>
+                    <VStack gap={6} align="stretch">
+                        <VStack align="stretch" gap={4}>
                       <Heading size="sm">テーマカラー</Heading>
                       <RadioGroup value={theme} onChange={setTheme}>
-                        <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4}>
+                          <SimpleGrid columns={{base: 2, md: 4}} gap={4}>
                           <Card 
                             p={3} 
                             borderWidth={2} 
@@ -743,10 +742,10 @@ export const Settings: React.FC = () => {
 
                     <Divider />
 
-                    <VStack align="stretch" spacing={4}>
+                        <VStack align="stretch" gap={4}>
                       <Heading size="sm">文字サイズ</Heading>
                       <RadioGroup value={fontSize} onChange={setFontSize}>
-                        <HStack spacing={4}>
+                          <HStack gap={4}>
                           <Card 
                             p={4} 
                             borderWidth={2} 
@@ -789,9 +788,9 @@ export const Settings: React.FC = () => {
 
                     <Divider />
 
-                    <VStack align="stretch" spacing={4}>
+                        <VStack align="stretch" gap={4}>
                       <Heading size="sm">その他の設定</Heading>
-                      <Stack spacing={3}>
+                            <Stack gap={3}>
                         <HStack justify="space-between">
                           <HStack>
                             <Icon as={FiMoon} />
@@ -875,7 +874,7 @@ export const Settings: React.FC = () => {
                               </Badge>
                             </Td>
                             <Td>
-                              <HStack spacing={2}>
+                                <HStack gap={2}>
                                 <Tooltip label="編集">
                                   <IconButton
                                     aria-label="編集"
@@ -915,16 +914,16 @@ export const Settings: React.FC = () => {
 
             {/* システム */}
             <TabPanel>
-              <VStack spacing={6} align="stretch">
+                <VStack gap={6} align="stretch">
                 <Card bg={bgColor}>
                   <CardHeader>
                     <Heading size="md">データ管理</Heading>
                   </CardHeader>
                   <CardBody>
-                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                      <SimpleGrid columns={{base: 1, md: 2}} gap={4}>
                       <Card variant="outline">
                         <CardBody>
-                          <VStack spacing={3}>
+                            <VStack gap={3}>
                             <Icon as={FiDownload} fontSize="2xl" color="blue.500" />
                             <Text fontWeight="bold">バックアップ</Text>
                             <Text fontSize="sm" color="gray.600" textAlign="center">
@@ -939,7 +938,7 @@ export const Settings: React.FC = () => {
 
                       <Card variant="outline">
                         <CardBody>
-                          <VStack spacing={3}>
+                            <VStack gap={3}>
                             <Icon as={FiUpload} fontSize="2xl" color="green.500" />
                             <Text fontWeight="bold">リストア</Text>
                             <Text fontSize="sm" color="gray.600" textAlign="center">
@@ -954,7 +953,7 @@ export const Settings: React.FC = () => {
 
                       <Card variant="outline">
                         <CardBody>
-                          <VStack spacing={3}>
+                            <VStack gap={3}>
                             <Icon as={FiDatabase} fontSize="2xl" color="purple.500" />
                             <Text fontWeight="bold">データ初期化</Text>
                             <Text fontSize="sm" color="gray.600" textAlign="center">
@@ -969,7 +968,7 @@ export const Settings: React.FC = () => {
 
                       <Card variant="outline">
                         <CardBody>
-                          <VStack spacing={3}>
+                            <VStack gap={3}>
                             <Icon as={FiRefreshCw} fontSize="2xl" color="orange.500" />
                             <Text fontWeight="bold">キャッシュクリア</Text>
                             <Text fontSize="sm" color="gray.600" textAlign="center">
@@ -990,7 +989,7 @@ export const Settings: React.FC = () => {
                     <Heading size="md">システム情報</Heading>
                   </CardHeader>
                   <CardBody>
-                    <VStack align="stretch" spacing={3}>
+                      <VStack align="stretch" gap={3}>
                       <HStack justify="space-between">
                         <Text color="gray.600">バージョン</Text>
                         <Badge colorScheme="green">v1.0.0</Badge>
@@ -1015,7 +1014,7 @@ export const Settings: React.FC = () => {
 
             {/* ヘルプ */}
             <TabPanel>
-              <VStack spacing={6} align="stretch">
+                <VStack gap={6} align="stretch">
                 <Alert status="info" borderRadius="lg">
                   <AlertIcon />
                   <Box>
@@ -1027,13 +1026,13 @@ export const Settings: React.FC = () => {
                   </Box>
                 </Alert>
 
-                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+                    <SimpleGrid columns={{base: 1, md: 2}} gap={6}>
                   <Card bg={bgColor}>
                     <CardHeader>
                       <Heading size="md">よくある質問</Heading>
                     </CardHeader>
                     <CardBody>
-                      <VStack align="stretch" spacing={3}>
+                        <VStack align="stretch" gap={3}>
                         <HStack as="button" justify="space-between" p={3} _hover={{ bg: 'gray.50' }}>
                           <Text>在庫データのバックアップ方法は？</Text>
                           <Icon as={FiChevronRight} />
@@ -1062,7 +1061,7 @@ export const Settings: React.FC = () => {
                       <Heading size="md">お問い合わせ</Heading>
                     </CardHeader>
                     <CardBody>
-                      <VStack spacing={4}>
+                        <VStack gap={4}>
                         <Button 
                           w="full" 
                           colorScheme="orange" 
@@ -1090,7 +1089,7 @@ export const Settings: React.FC = () => {
 
                 <Card bg="orange.50" borderColor="orange.200" borderWidth={2}>
                   <CardBody>
-                    <HStack spacing={4}>
+                      <HStack gap={4}>
                       <Icon as={FiHelpCircle} color="orange.500" fontSize="3xl" />
                       <VStack align="start" flex={1}>
                         <Text fontWeight="bold" color="orange.700">
@@ -1124,7 +1123,7 @@ export const Settings: React.FC = () => {
           <ModalCloseButton />
           <ModalBody>
             {modalType === 'user' && (
-              <VStack spacing={4}>
+                <VStack gap={4}>
                 <FormControl>
                   <FormLabel>名前</FormLabel>
                   <Input placeholder="山田 太郎" />
@@ -1144,7 +1143,7 @@ export const Settings: React.FC = () => {
               </VStack>
             )}
             {modalType === 'category' && (
-              <VStack spacing={4}>
+                <VStack gap={4}>
                 <FormControl>
                   <FormLabel>カテゴリ名</FormLabel>
                   <Input placeholder="例: デザート" />
@@ -1166,7 +1165,7 @@ export const Settings: React.FC = () => {
               </VStack>
             )}
             {modalType === 'unit' && (
-              <VStack spacing={4}>
+                <VStack gap={4}>
                 <FormControl>
                   <FormLabel>単位名</FormLabel>
                   <Input placeholder="例: ダース" />

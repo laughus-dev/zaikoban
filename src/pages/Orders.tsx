@@ -1,47 +1,30 @@
 import React, {useState} from 'react';
 import {
     Alert,
-    AlertDescription,
-    AlertIcon,
-    AlertTitle,
     Badge,
     Box,
     Button,
     Card,
-    CardBody,
-    CardHeader,
     Checkbox,
+    createToaster,
+    DialogBody,
+    DialogCloseTrigger,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogRoot,
+    DialogTitle,
     Flex,
     Heading,
     HStack,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
     SimpleGrid,
-    Stat,
-    StatHelpText,
-    StatLabel,
-    StatNumber,
-    Tab,
     Table,
-    TableContainer,
-    TabList,
-    TabPanel,
-    TabPanels,
-    Tabs,
-    Tbody,
-    Td,
+    TabsContent,
+    TabsList,
+    TabsRoot,
+    TabsTrigger,
     Text,
-    Th,
-    Thead,
-    Tr,
-    useDisclosure,
-    useToast,
-    VStack,
+    VStack
 } from '@chakra-ui/react';
 import {
     FiAlertCircle,
@@ -54,8 +37,9 @@ import {
     FiShoppingCart,
     FiXCircle,
 } from 'react-icons/fi';
-import {Column, DataTable} from '../components/common/DataTable';
-import {Order, OrderItem} from '../types';
+import type {Column} from '../components/common/DataTable';
+import {DataTable} from '../components/common/DataTable';
+import type {Order, OrderItem} from '../types';
 import {mockProducts, mockSuppliers} from '../data/mockData';
 import {formatCurrency, formatDate, formatQuantity} from '../utils/formatters';
 
@@ -68,8 +52,12 @@ interface OrderDraft {
 export const Orders: React.FC = () => {
   const [orderDrafts, setOrderDrafts] = useState<OrderDraft[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
+    const [isOpen, setIsOpen] = useState(false);
+    const toast = createToaster({
+        placement: 'top',
+    });
+    const onOpen = () => setIsOpen(true);
+    const onClose = () => setIsOpen(false);
 
   const lowStockProducts = mockProducts.filter(p => p.currentStock <= p.minStock);
   
@@ -147,12 +135,10 @@ export const Orders: React.FC = () => {
 
   const createOrderDraft = () => {
     if (selectedProducts.size === 0) {
-      toast({
+        toast.create({
         title: 'エラー',
         description: '商品を選択してください',
-        status: 'error',
         duration: 3000,
-        isClosable: true,
       });
       return;
     }
@@ -200,13 +186,11 @@ export const Orders: React.FC = () => {
 
     setOrders([newOrder, ...orders]);
     setOrderDrafts(orderDrafts.filter(d => d.supplierId !== draft.supplierId));
-    
-    toast({
+
+      toast.create({
       title: '発注完了',
       description: `${supplier?.name}への発注を送信しました`,
-      status: 'success',
       duration: 3000,
-      isClosable: true,
     });
 
     if (orderDrafts.length === 1) {
@@ -266,7 +250,7 @@ export const Orders: React.FC = () => {
         const Icon = status.icon;
         return (
           <Badge colorScheme={status.color}>
-            <HStack spacing={1}>
+              <HStack gap={1}>
               <Icon size={12} />
               <Text>{status.label}</Text>
             </HStack>
@@ -281,12 +265,10 @@ export const Orders: React.FC = () => {
       label: '詳細',
       icon: <FiEdit />,
       onClick: (item: Order) => {
-        toast({
+          toast.create({
           title: '発注詳細',
           description: `発注番号: ${item.orderNumber}`,
-          status: 'info',
           duration: 3000,
-          isClosable: true,
         });
       },
     },
@@ -294,12 +276,10 @@ export const Orders: React.FC = () => {
       label: 'キャンセル',
       icon: <FiXCircle />,
       onClick: (item: Order) => {
-        toast({
+          toast.create({
           title: '発注キャンセル',
           description: `${item.orderNumber}をキャンセルしました`,
-          status: 'warning',
           duration: 3000,
-          isClosable: true,
         });
       },
       color: 'red.500',
@@ -312,43 +292,42 @@ export const Orders: React.FC = () => {
       <Flex justify="space-between" align="center" mb={6}>
         <Heading size="lg">発注管理</Heading>
         <Button
-          leftIcon={<FiPlus />}
           colorScheme="primary"
           onClick={createOrderDraft}
-          isDisabled={selectedProducts.size === 0}
+          disabled={selectedProducts.size === 0}
         >
-          発注書作成 ({selectedProducts.size})
+            <FiPlus/> 発注書作成 ({selectedProducts.size})
         </Button>
       </Flex>
 
-      <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4} mb={6}>
-        <Stat>
-          <StatLabel>発注必要商品</StatLabel>
-          <StatNumber color="red.500">{lowStockProducts.length}</StatNumber>
-          <StatHelpText>在庫不足</StatHelpText>
-        </Stat>
-        <Stat>
-          <StatLabel>進行中の発注</StatLabel>
-          <StatNumber color="blue.500">
+        <SimpleGrid columns={{base: 1, md: 4}} gap={4} mb={6}>
+            <Box p={4} bg="white" borderRadius="lg" boxShadow="sm">
+                <Text fontSize="sm" color="gray.500">発注必要商品</Text>
+                <Text fontSize="2xl" fontWeight="bold" color="red.500">{lowStockProducts.length}</Text>
+                <Text fontSize="xs" color="gray.500">在庫不足</Text>
+            </Box>
+            <Box p={4} bg="white" borderRadius="lg" boxShadow="sm">
+                <Text fontSize="sm" color="gray.500">進行中の発注</Text>
+                <Text fontSize="2xl" fontWeight="bold" color="blue.500">
             {orders.filter(o => o.status === 'ordered').length}
-          </StatNumber>
-          <StatHelpText>納品待ち</StatHelpText>
-        </Stat>
-        <Stat>
-          <StatLabel>今月の発注額</StatLabel>
-          <StatNumber>{formatCurrency(85000)}</StatNumber>
-          <StatHelpText>12月分</StatHelpText>
-        </Stat>
-        <Stat>
-          <StatLabel>平均リードタイム</StatLabel>
-          <StatNumber>2.5日</StatNumber>
-          <StatHelpText>発注から納品まで</StatHelpText>
-        </Stat>
+                </Text>
+                <Text fontSize="xs" color="gray.500">納品待ち</Text>
+            </Box>
+            <Box p={4} bg="white" borderRadius="lg" boxShadow="sm">
+                <Text fontSize="sm" color="gray.500">今月の発注額</Text>
+                <Text fontSize="2xl" fontWeight="bold">{formatCurrency(85000)}</Text>
+                <Text fontSize="xs" color="gray.500">12月分</Text>
+            </Box>
+            <Box p={4} bg="white" borderRadius="lg" boxShadow="sm">
+                <Text fontSize="sm" color="gray.500">平均リードタイム</Text>
+                <Text fontSize="2xl" fontWeight="bold">2.5日</Text>
+                <Text fontSize="xs" color="gray.500">発注から納品まで</Text>
+            </Box>
       </SimpleGrid>
 
-      <Tabs colorScheme="primary">
-        <TabList>
-          <Tab>
+        <TabsRoot colorScheme="primary">
+            <TabsList>
+                <TabsTrigger value="required">
             <HStack>
               <FiAlertCircle />
               <Text>発注が必要な商品</Text>
@@ -356,19 +335,18 @@ export const Orders: React.FC = () => {
                 <Badge colorScheme="red">{lowStockProducts.length}</Badge>
               )}
             </HStack>
-          </Tab>
-          <Tab>
+                </TabsTrigger>
+                <TabsTrigger value="history">
             <HStack>
               <FiShoppingCart />
               <Text>発注履歴</Text>
             </HStack>
-          </Tab>
-        </TabList>
+                </TabsTrigger>
+            </TabsList>
 
-        <TabPanels>
-          <TabPanel>
-            <Card>
-              <CardBody>
+            <TabsContent value="required">
+                <Card.Root>
+                    <Card.Body>
                 {lowStockProducts.length > 0 ? (
                   <>
                     <Flex justify="space-between" align="center" mb={4}>
@@ -383,27 +361,27 @@ export const Orders: React.FC = () => {
                         {selectedProducts.size === lowStockProducts.length ? '選択解除' : '全て選択'}
                       </Button>
                     </Flex>
-                    <TableContainer>
-                      <Table size="sm">
-                        <Thead>
-                          <Tr>
-                            <Th width="40px">
-                              <Checkbox
-                                isChecked={selectedProducts.size === lowStockProducts.length}
-                                isIndeterminate={selectedProducts.size > 0 && selectedProducts.size < lowStockProducts.length}
-                                onChange={handleSelectAll}
-                              />
-                            </Th>
-                            <Th>商品名</Th>
-                            <Th>仕入先</Th>
-                            <Th isNumeric>現在庫</Th>
-                            <Th isNumeric>発注点</Th>
-                            <Th isNumeric>推奨発注量</Th>
-                            <Th isNumeric>予想金額</Th>
-                            <Th>優先度</Th>
-                          </Tr>
-                        </Thead>
-                        <Tbody>
+                      <Table.Root size="sm">
+                          <Table.Header>
+                              <Table.Row>
+                                  <Table.ColumnHeader width="40px">
+                                      <Checkbox.Root
+                                          checked={selectedProducts.size === lowStockProducts.length}
+                                          onCheckedChange={handleSelectAll}
+                                      >
+                                          <Checkbox.Indicator/>
+                                      </Checkbox.Root>
+                                  </Table.ColumnHeader>
+                                  <Table.ColumnHeader>商品名</Table.ColumnHeader>
+                                  <Table.ColumnHeader>仕入先</Table.ColumnHeader>
+                                  <Table.ColumnHeader textAlign="right">現在庫</Table.ColumnHeader>
+                                  <Table.ColumnHeader textAlign="right">発注点</Table.ColumnHeader>
+                                  <Table.ColumnHeader textAlign="right">推奨発注量</Table.ColumnHeader>
+                                  <Table.ColumnHeader textAlign="right">予想金額</Table.ColumnHeader>
+                                  <Table.ColumnHeader>優先度</Table.ColumnHeader>
+                              </Table.Row>
+                          </Table.Header>
+                          <Table.Body>
                           {lowStockProducts.map((product) => {
                             const supplier = mockSuppliers.find(s => s.id === product.supplierId);
                             const orderQuantity = product.maxStock - product.currentStock;
@@ -412,31 +390,34 @@ export const Orders: React.FC = () => {
                                            product.currentStock < product.minStock * 0.5 ? 'medium' : 'low';
                             
                             return (
-                              <Tr key={product.id}>
-                                <Td>
-                                  <Checkbox
-                                    isChecked={selectedProducts.has(product.id)}
-                                    onChange={() => handleSelectProduct(product.id)}
-                                  />
-                                </Td>
-                                <Td>
-                                  <VStack align="start" spacing={0}>
+                                <Table.Row key={product.id}>
+                                    <Table.Cell>
+                                        <Checkbox.Root
+                                            checked={selectedProducts.has(product.id)}
+                                            onCheckedChange={() => handleSelectProduct(product.id)}
+                                        >
+                                            <Checkbox.Indicator/>
+                                        </Checkbox.Root>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <VStack align="start" gap={0}>
                                     <Text fontWeight="medium">{product.name}</Text>
                                     <Text fontSize="xs" color="gray.500">{product.code}</Text>
                                   </VStack>
-                                </Td>
-                                <Td>{supplier?.name || '-'}</Td>
-                                <Td isNumeric>
+                                    </Table.Cell>
+                                    <Table.Cell>{supplier?.name || '-'}</Table.Cell>
+                                    <Table.Cell textAlign="right">
                                   <Text color={product.currentStock === 0 ? 'red.500' : 'orange.500'}>
                                     {formatQuantity(product.currentStock, product.unit)}
                                   </Text>
-                                </Td>
-                                <Td isNumeric>{formatQuantity(product.minStock, product.unit)}</Td>
-                                <Td isNumeric fontWeight="bold">
+                                    </Table.Cell>
+                                    <Table.Cell
+                                        textAlign="right">{formatQuantity(product.minStock, product.unit)}</Table.Cell>
+                                    <Table.Cell textAlign="right" fontWeight="bold">
                                   {formatQuantity(orderQuantity, product.unit)}
-                                </Td>
-                                <Td isNumeric>{formatCurrency(estimatedCost)}</Td>
-                                <Td>
+                                    </Table.Cell>
+                                    <Table.Cell textAlign="right">{formatCurrency(estimatedCost)}</Table.Cell>
+                                    <Table.Cell>
                                   <Badge colorScheme={
                                     priority === 'high' ? 'red' : 
                                     priority === 'medium' ? 'orange' : 'yellow'
@@ -444,32 +425,31 @@ export const Orders: React.FC = () => {
                                     {priority === 'high' ? '緊急' : 
                                      priority === 'medium' ? '中' : '低'}
                                   </Badge>
-                                </Td>
-                              </Tr>
+                                    </Table.Cell>
+                                </Table.Row>
                             );
                           })}
-                        </Tbody>
-                      </Table>
-                    </TableContainer>
+                          </Table.Body>
+                      </Table.Root>
                   </>
                 ) : (
-                  <Alert status="success">
-                    <AlertIcon />
+                    <Alert.Root status="success">
+                        <Alert.Indicator/>
                     <Box>
-                      <AlertTitle>発注が必要な商品はありません</AlertTitle>
-                      <AlertDescription>
+                        <Alert.Title>発注が必要な商品はありません</Alert.Title>
+                        <Alert.Description>
                         全ての商品の在庫が適正レベルです
-                      </AlertDescription>
+                        </Alert.Description>
                     </Box>
-                  </Alert>
+                    </Alert.Root>
                 )}
-              </CardBody>
-            </Card>
-          </TabPanel>
+                    </Card.Body>
+                </Card.Root>
+            </TabsContent>
 
-          <TabPanel>
-            <Card>
-              <CardBody>
+            <TabsContent value="history">
+                <Card.Root>
+                    <Card.Body>
                 <DataTable
                   data={orders}
                   columns={orderColumns}
@@ -479,80 +459,80 @@ export const Orders: React.FC = () => {
                   pageSize={10}
                   actions={orderActions}
                 />
-              </CardBody>
-            </Card>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+                    </Card.Body>
+                </Card.Root>
+            </TabsContent>
+        </TabsRoot>
 
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>発注書確認</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack align="stretch" spacing={4}>
+        <DialogRoot open={isOpen} onOpenChange={(details) => setIsOpen(details.open)} size="xl">
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>発注書確認</DialogTitle>
+                    <DialogCloseTrigger/>
+                </DialogHeader>
+                <DialogBody>
+                    <VStack align="stretch" gap={4}>
               {orderDrafts.map((draft) => {
                 const supplier = mockSuppliers.find(s => s.id === draft.supplierId);
                 return (
-                  <Card key={draft.supplierId}>
-                    <CardHeader>
+                    <Card.Root key={draft.supplierId}>
+                        <Card.Header>
                       <Flex justify="space-between" align="center">
                         <Heading size="sm">{supplier?.name}</Heading>
                         <Badge colorScheme="blue">
                           {draft.items.length}品目
                         </Badge>
                       </Flex>
-                    </CardHeader>
-                    <CardBody>
-                      <TableContainer mb={4}>
-                        <Table size="sm">
-                          <Thead>
-                            <Tr>
-                              <Th>商品名</Th>
-                              <Th isNumeric>数量</Th>
-                              <Th isNumeric>単価</Th>
-                              <Th isNumeric>金額</Th>
-                            </Tr>
-                          </Thead>
-                          <Tbody>
+                        </Card.Header>
+                        <Card.Body>
+                            <Box mb={4}>
+                                <Table.Root size="sm">
+                                    <Table.Header>
+                                        <Table.Row>
+                                            <Table.ColumnHeader>商品名</Table.ColumnHeader>
+                                            <Table.ColumnHeader textAlign="right">数量</Table.ColumnHeader>
+                                            <Table.ColumnHeader textAlign="right">単価</Table.ColumnHeader>
+                                            <Table.ColumnHeader textAlign="right">金額</Table.ColumnHeader>
+                                        </Table.Row>
+                                    </Table.Header>
+                                    <Table.Body>
                             {draft.items.map((item) => (
-                              <Tr key={item.productId}>
-                                <Td>{item.productName}</Td>
-                                <Td isNumeric>{item.quantity}</Td>
-                                <Td isNumeric>{formatCurrency(item.unitPrice)}</Td>
-                                <Td isNumeric>{formatCurrency(item.totalPrice)}</Td>
-                              </Tr>
+                                <Table.Row key={item.productId}>
+                                    <Table.Cell>{item.productName}</Table.Cell>
+                                    <Table.Cell textAlign="right">{item.quantity}</Table.Cell>
+                                    <Table.Cell textAlign="right">{formatCurrency(item.unitPrice)}</Table.Cell>
+                                    <Table.Cell textAlign="right">{formatCurrency(item.totalPrice)}</Table.Cell>
+                                </Table.Row>
                             ))}
-                            <Tr fontWeight="bold">
-                              <Td colSpan={3}>合計</Td>
-                              <Td isNumeric>{formatCurrency(draft.totalAmount)}</Td>
-                            </Tr>
-                          </Tbody>
-                        </Table>
-                      </TableContainer>
+                                        <Table.Row fontWeight="bold">
+                                            <Table.Cell colSpan={3}>合計</Table.Cell>
+                                            <Table.Cell
+                                                textAlign="right">{formatCurrency(draft.totalAmount)}</Table.Cell>
+                                        </Table.Row>
+                                    </Table.Body>
+                                </Table.Root>
+                            </Box>
                       <Button
-                        leftIcon={<FiSend />}
                         colorScheme="primary"
                         size="sm"
                         width="full"
                         onClick={() => sendOrder(draft)}
                       >
-                        この仕入先に発注
+                          <FiSend/> この仕入先に発注
                       </Button>
-                    </CardBody>
-                  </Card>
+                        </Card.Body>
+                    </Card.Root>
                 );
               })}
             </VStack>
-          </ModalBody>
-          <ModalFooter>
+                </DialogBody>
+                <DialogFooter>
             <Button variant="ghost" mr={3} onClick={onClose}>
               キャンセル
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+                </DialogFooter>
+            </DialogContent>
+        </DialogRoot>
     </Box>
   );
 };

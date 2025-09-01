@@ -1,12 +1,30 @@
 import React, {useState} from 'react';
-import {Badge, Box, Button, Flex, Heading, HStack, SimpleGrid, Text, useDisclosure, VStack,} from '@chakra-ui/react';
-import {Card} from '@chakra-ui/react/card';
-import {Stat} from '@chakra-ui/react/stat';
-import {Table} from '@chakra-ui/react/table';
-import {NumberInput} from '@chakra-ui/react/number-input';
-import {Alert} from '@chakra-ui/react/alert';
-import {Tabs} from '@chakra-ui/react/tabs';
-import {Progress} from '@chakra-ui/react/progress';
+import {
+    Alert,
+    Badge,
+    Box,
+    Button,
+    Card,
+    DialogBody,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogRoot,
+    DialogTitle,
+    Flex,
+    Heading,
+    HStack,
+    NumberInput,
+    Progress,
+    SimpleGrid,
+    Table,
+    TabsContent,
+    TabsList,
+    TabsRoot,
+    TabsTrigger,
+    Text,
+    VStack,
+} from '@chakra-ui/react';
 import {FiCheckCircle, FiEdit3, FiFileText, FiRefreshCw,} from 'react-icons/fi';
 import {type Column, DataTable} from '../components/common/DataTable';
 import type {Product, Stocktaking as StocktakingType, StocktakingItem} from '../types';
@@ -22,7 +40,9 @@ export const Stocktaking: React.FC = () => {
   const [, setCurrentStocktaking] = useState<StocktakingType | null>(null);
   const [stocktakingItems, setStocktakingItems] = useState<StocktakingItemExtended[]>([]);
   const [completedCount, setCompletedCount] = useState(0);
-  const { open, onOpen, onClose } = useDisclosure();
+    const [open, setOpen] = useState(false);
+    const onOpen = () => setOpen(true);
+    const onClose = () => setOpen(false);
   // const toast = useToast(); // TODO: 実装時に使用
 
   const mockStocktakingHistory: StocktakingType[] = [
@@ -155,8 +175,8 @@ export const Stocktaking: React.FC = () => {
         <HStack gap={1}>
           {item.totalDifference !== 0 && (
             <>
-              <Stat.UpIndicator display={item.totalDifference > 0 ? 'inline' : 'none'} />
-              <Stat.DownIndicator display={item.totalDifference < 0 ? 'inline' : 'none'} />
+                {item.totalDifference > 0 && <Text color="green.500">↑</Text>}
+                {item.totalDifference < 0 && <Text color="red.500">↓</Text>}
             </>
           )}
           <Text color={item.totalDifference > 0 ? 'green.500' : item.totalDifference < 0 ? 'red.500' : 'gray.500'}>
@@ -206,32 +226,32 @@ export const Stocktaking: React.FC = () => {
           </Alert.Root>
 
           <SimpleGrid columns={{ base: 1, md: 4 }} gap={4} mb={6}>
-            <Stat.Root>
-              <Stat.Label>対象商品数</Stat.Label>
-              <Stat.ValueText>{mockProducts.length}</Stat.ValueText>
-              <Stat.HelpText>全商品</Stat.HelpText>
-            </Stat.Root>
-            <Stat.Root>
-              <Stat.Label>確認済み</Stat.Label>
-              <Stat.ValueText>{completedCount}</Stat.ValueText>
-              <Stat.HelpText>{progress.toFixed(0)}%</Stat.HelpText>
-            </Stat.Root>
-            <Stat.Root>
-              <Stat.Label>差異金額</Stat.Label>
-              <Stat.ValueText>
+              <Box p={4} bg="white" borderRadius="lg">
+                  <Text fontSize="sm" color="gray.500">対象商品数</Text>
+                  <Text fontSize="2xl" fontWeight="bold">{mockProducts.length}</Text>
+                  <Text fontSize="xs" color="gray.400">全商品</Text>
+              </Box>
+              <Box p={4} bg="white" borderRadius="lg">
+                  <Text fontSize="sm" color="gray.500">確認済み</Text>
+                  <Text fontSize="2xl" fontWeight="bold">{completedCount}</Text>
+                  <Text fontSize="xs" color="gray.400">{progress.toFixed(0)}%</Text>
+              </Box>
+              <Box p={4} bg="white" borderRadius="lg">
+                  <Text fontSize="sm" color="gray.500">差異金額</Text>
+                  <Text fontSize="2xl" fontWeight="bold">
                 {formatCurrency(
                   stocktakingItems.reduce((sum, item) => sum + item.differenceAmount, 0)
                 )}
-              </Stat.ValueText>
-              <Stat.HelpText>現在の差異</Stat.HelpText>
-            </Stat.Root>
-            <Stat.Root>
-              <Stat.Label>ステータス</Stat.Label>
-              <Stat.ValueText>
+                  </Text>
+                  <Text fontSize="xs" color="gray.400">現在の差異</Text>
+              </Box>
+              <Box p={4} bg="white" borderRadius="lg">
+                  <Text fontSize="sm" color="gray.500">ステータス</Text>
+                  <Text fontSize="2xl" fontWeight="bold">
                 <Badge colorScheme="yellow" fontSize="md">進行中</Badge>
-              </Stat.ValueText>
-              <Stat.HelpText>{formatDate(new Date())}</Stat.HelpText>
-            </Stat.Root>
+                  </Text>
+                  <Text fontSize="xs" color="gray.400">{formatDate(new Date())}</Text>
+              </Box>
           </SimpleGrid>
 
           <Progress.Root value={progress} colorPalette="blue" mb={6}>
@@ -264,7 +284,7 @@ export const Stocktaking: React.FC = () => {
               </Flex>
 
               <Table.ScrollArea maxH="500px" overflowY="auto">
-                <Table.Root size="sm" variant="simple">
+                  <Table.Root size="sm">
                   <Table.Header position="sticky" top={0} bg="white" zIndex={1}>
                     <Table.Row>
                       <Table.ColumnHeader>商品コード</Table.ColumnHeader>
@@ -330,14 +350,13 @@ export const Stocktaking: React.FC = () => {
           </Card.Root>
         </>
       ) : (
-        <Tabs.Root colorPalette="blue">
-          <Tabs.List>
-            <Tabs.Trigger value="overview">概要</Tabs.Trigger>
-            <Tabs.Trigger value="history">履歴</Tabs.Trigger>
-          </Tabs.List>
+          <TabsRoot defaultValue="overview" colorPalette="blue">
+              <TabsList>
+                  <TabsTrigger value="overview">概要</TabsTrigger>
+                  <TabsTrigger value="history">履歴</TabsTrigger>
+              </TabsList>
 
-          <Tabs.ContentGroup>
-            <Tabs.Content value="overview">
+              <TabsContent value="overview">
               <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
                 <Card.Root>
                   <Card.Header>
@@ -398,9 +417,9 @@ export const Stocktaking: React.FC = () => {
                   </Card.Body>
                 </Card.Root>
               </SimpleGrid>
-            </Tabs.Content>
+              </TabsContent>
 
-            <Tabs.Content value="history">
+              <TabsContent value="history">
               <Card.Root>
                 <Card.Body>
                   <DataTable
@@ -412,18 +431,16 @@ export const Stocktaking: React.FC = () => {
                   />
                 </Card.Body>
               </Card.Root>
-            </Tabs.Content>
-          </Tabs.ContentGroup>
-        </Tabs.Root>
+              </TabsContent>
+          </TabsRoot>
       )}
 
-      <Modal.Root open={isOpen} onOpenChange={(details) => !details.open && onClose()}>
-        <Modal.Backdrop />
-        <Modal.Positioner>
-          <Modal.Content>
-          <Modal.Header>棚卸し完了確認</Modal.Header>
-          <Modal.CloseTrigger />
-          <Modal.Body>
+        <DialogRoot open={open} onOpenChange={(details) => setOpen(details.open)}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>棚卸し完了確認</DialogTitle>
+                </DialogHeader>
+                <DialogBody>
             <VStack align="stretch" gap={4}>
               <Alert.Root status="warning">
                 <Alert.Indicator />
@@ -456,18 +473,17 @@ export const Stocktaking: React.FC = () => {
                 </VStack>
               </Box>
             </VStack>
-          </Modal.Body>
-          <Modal.Footer>
+                </DialogBody>
+                <DialogFooter>
             <Button variant="ghost" mr={3} onClick={onClose}>
               キャンセル
             </Button>
             <Button colorScheme="primary" onClick={completeStocktaking}>
               確定
             </Button>
-          </Modal.Footer>
-          </Modal.Content>
-        </Modal.Positioner>
-      </Modal.Root>
+                </DialogFooter>
+            </DialogContent>
+        </DialogRoot>
     </Box>
   );
 };
