@@ -46,6 +46,7 @@ export const StockInOut: React.FC = () => {
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(0);
   const [unitPrice, setUnitPrice] = useState<number>(0);
+    const [unitPriceDisplay, setUnitPriceDisplay] = useState<string>('');
   const [note, setNote] = useState<string>('');
     const toaster = createToaster({
         placement: 'top',
@@ -95,6 +96,30 @@ export const StockInOut: React.FC = () => {
 
   const [transactions, setTransactions] = useState<StockTransaction[]>(mockTransactions);
 
+    const handleUnitPriceChange = (value: string) => {
+        const numValue = value.replace(/[¥,]/g, '');
+        if (!isNaN(Number(numValue)) && numValue !== '') {
+            const num = Number(numValue);
+            setUnitPrice(num);
+            setUnitPriceDisplay(`¥${num.toLocaleString('ja-JP')}`);
+        } else if (value === '') {
+            setUnitPrice(0);
+            setUnitPriceDisplay('');
+        }
+    };
+
+    const handleUnitPriceBlur = () => {
+        if (unitPrice > 0) {
+            setUnitPriceDisplay(`¥${unitPrice.toLocaleString('ja-JP')}`);
+        }
+    };
+
+    const handleUnitPriceFocus = () => {
+        if (unitPrice > 0) {
+            setUnitPriceDisplay(unitPrice.toString());
+        }
+    };
+
   const handleAddToBatch = () => {
     if (!selectedProductId || quantity <= 0) {
         toaster.create({
@@ -121,6 +146,7 @@ export const StockInOut: React.FC = () => {
     setSelectedProductId('');
     setQuantity(0);
     setUnitPrice(0);
+      setUnitPriceDisplay('');
     setNote('');
 
       toaster.create({
@@ -269,51 +295,103 @@ export const StockInOut: React.FC = () => {
                                             placeholder="仕入先を選択"
                                             value={selectedSupplierId}
                                             onChange={(e) => setSelectedSupplierId(e.target.value)}
-                                        />
-                                        {mockSuppliers.map((supplier) => (
-                                            <option key={supplier.id} value={supplier.id}>
-                                                {supplier.name}
-                                            </option>
-                                        ))}
+                                        >
+                                            <option value="">仕入先を選択</option>
+                                            {mockSuppliers.map((supplier) => (
+                                                <option key={supplier.id} value={supplier.id}>
+                                                    {supplier.name}
+                                                </option>
+                                            ))}
+                                        </NativeSelect.Field>
                                     </NativeSelect.Root>
                                 </Field.Root>
 
-                                <SimpleGrid columns={{base: 1, md: 2, lg: 4}} gap={4}>
-                                    <Field.Root>
+                                <HStack gap={4} align="start" flexWrap="wrap">
+                                    <Field.Root flex="1" minW="200px">
                                         <Field.Label>商品 *</Field.Label>
                                         <NativeSelect.Root>
                                             <NativeSelect.Field
                                                 placeholder="商品を選択"
                                                 value={selectedProductId}
                                                 onChange={(e) => setSelectedProductId(e.target.value)}
-                                            />
-                                            {mockProducts.map((product) => (
-                                                <option key={product.id} value={product.id}>
-                                                    {product.name}
-                                                </option>
-                                            ))}
+                                            >
+                                                <option value="">商品を選択</option>
+                                                {mockProducts.map((product) => (
+                                                    <option key={product.id} value={product.id}>
+                                                        {product.name}
+                                                    </option>
+                                                ))}
+                                            </NativeSelect.Field>
                                         </NativeSelect.Root>
                                     </Field.Root>
-                                    <Field.Root>
+                                    <Field.Root minW="150px">
                                         <Field.Label>数量 *</Field.Label>
-                                        <Input
-                                            type="number"
-                                            value={quantity}
-                                            onChange={(e) => setQuantity(Number(e.target.value))}
-                                            min={0}
-                                            step={0.1}
-                                        />
+                                        <HStack gap={1}>
+                                            <Input
+                                                type="number"
+                                                value={quantity}
+                                                onChange={(e) => setQuantity(Number(e.target.value))}
+                                                min={0}
+                                                step={1}
+                                                width="100px"
+                                            />
+                                            <HStack gap={0}>
+                                                <IconButton
+                                                    aria-label="減らす"
+                                                    size="sm"
+                                                    onClick={() => setQuantity(Math.max(0, quantity - 1))}
+                                                >
+                                                    <FiMinus/>
+                                                </IconButton>
+                                                <IconButton
+                                                    aria-label="増やす"
+                                                    size="sm"
+                                                    onClick={() => setQuantity(quantity + 1)}
+                                                >
+                                                    <FiPlus/>
+                                                </IconButton>
+                                            </HStack>
+                                        </HStack>
                                     </Field.Root>
-                                    <Field.Root>
+                                    <Field.Root minW="200px">
                                         <Field.Label>仕入単価 *</Field.Label>
-                                        <Input
-                                            type="number"
-                                            value={unitPrice}
-                                            onChange={(e) => setUnitPrice(Number(e.target.value))}
-                                            min={0}
-                                        />
+                                        <HStack gap={1}>
+                                            <Input
+                                                type="text"
+                                                value={unitPriceDisplay}
+                                                onChange={(e) => handleUnitPriceChange(e.target.value)}
+                                                onBlur={handleUnitPriceBlur}
+                                                onFocus={handleUnitPriceFocus}
+                                                placeholder="¥0"
+                                                width="120px"
+                                            />
+                                            <HStack gap={0}>
+                                                <IconButton
+                                                    aria-label="減らす"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        const newPrice = Math.max(0, unitPrice - 100);
+                                                        setUnitPrice(newPrice);
+                                                        setUnitPriceDisplay(newPrice > 0 ? `¥${newPrice.toLocaleString('ja-JP')}` : '');
+                                                    }}
+                                                >
+                                                    <FiMinus/>
+                                                </IconButton>
+                                                <IconButton
+                                                    aria-label="増やす"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        const newPrice = unitPrice + 100;
+                                                        setUnitPrice(newPrice);
+                                                        setUnitPriceDisplay(`¥${newPrice.toLocaleString('ja-JP')}`);
+                                                    }}
+                                                >
+                                                    <FiPlus/>
+                                                </IconButton>
+                                            </HStack>
+                                        </HStack>
                                     </Field.Root>
-                                    <Field.Root>
+                                    <Field.Root flex="1" minW="200px">
                                         <Field.Label>備考</Field.Label>
                       <Textarea
                         value={note}
@@ -322,7 +400,7 @@ export const StockInOut: React.FC = () => {
                         rows={1}
                       />
                                     </Field.Root>
-                  </SimpleGrid>
+                                </HStack>
 
                   <Button
                       colorScheme="blue"
@@ -351,16 +429,35 @@ export const StockInOut: React.FC = () => {
                       placeholder="商品を選択"
                       isRequired
                     />
-                    <FormField
-                      type="number"
-                      label="数量"
-                      name="quantity"
-                      value={quantity}
-                      onChange={(value) => setQuantity(Number(value))}
-                      min={0}
-                      step={0.1}
-                      isRequired
-                    />
+                                    <Field.Root>
+                                        <Field.Label>数量 *</Field.Label>
+                                        <HStack>
+                                            <Input
+                                                type="number"
+                                                value={quantity}
+                                                onChange={(e) => setQuantity(Number(e.target.value))}
+                                                min={0}
+                                                step={1}
+                                                flex={1}
+                                            />
+                                            <HStack gap={0}>
+                                                <IconButton
+                                                    aria-label="減らす"
+                                                    size="sm"
+                                                    onClick={() => setQuantity(Math.max(0, quantity - 1))}
+                                                >
+                                                    <FiMinus/>
+                                                </IconButton>
+                                                <IconButton
+                                                    aria-label="増やす"
+                                                    size="sm"
+                                                    onClick={() => setQuantity(quantity + 1)}
+                                                >
+                                                    <FiPlus/>
+                                                </IconButton>
+                                            </HStack>
+                                        </HStack>
+                                    </Field.Root>
                                     <Field.Root>
                                         <Field.Label>理由</Field.Label>
                                         <NativeSelect.Root>

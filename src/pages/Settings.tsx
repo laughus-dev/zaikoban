@@ -3,7 +3,6 @@ import {
     AlertDescription,
     AlertRoot,
     AlertTitle,
-    AvatarRoot,
     Badge,
     Box,
     Button,
@@ -12,11 +11,13 @@ import {
     CardRoot,
     Center,
     createToaster,
+    DialogBackdrop,
     DialogBody,
     DialogCloseTrigger,
     DialogContent,
     DialogFooter,
     DialogHeader,
+    DialogPositioner,
     DialogRoot,
     FieldLabel,
     FieldRoot,
@@ -167,7 +168,7 @@ export const Settings: React.FC = () => {
         </VStack>
 
         {/* タブ */}
-            <TabsRoot colorScheme="orange" variant="enclosed">
+            <TabsRoot colorScheme="orange" variant="enclosed" defaultValue="profile">
                 <TabsList flexWrap="wrap">
                     <TabsTrigger value="profile"><Icon as={FiUser} mr={2}/>プロフィール</TabsTrigger>
                     <TabsTrigger value="store"><Icon as={FiMapPin} mr={2}/>店舗情報</TabsTrigger>
@@ -185,11 +186,26 @@ export const Settings: React.FC = () => {
                     <VStack gap={6} align="stretch">
                     <Center>
                         <VStack gap={4}>
-                            <AvatarRoot size="2xl" bg="orange.500">田中 太郎</AvatarRoot>
+                            <Box
+                                display="inline-flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                width="80px"
+                                height="80px"
+                                borderRadius="full"
+                                bg="orange.500"
+                                color="white"
+                                fontSize="xl"
+                                fontWeight="semibold"
+                            >
+                                田中
+                            </Box>
                             <Button size="sm" colorScheme="orange" variant="outline">
-                                <FiCamera/>
-                          写真を変更
-                        </Button>
+                                <HStack gap={1}>
+                                    <FiCamera/>
+                                    <Text>写真を変更</Text>
+                                </HStack>
+                            </Button>
                       </VStack>
                     </Center>
 
@@ -1173,13 +1189,17 @@ export const Settings: React.FC = () => {
 
         {/* ダイアログ */}
         <DialogRoot open={isDialogOpen} onOpenChange={({open}) => !open && handleModalClose()}>
-            <DialogContent>
-                <DialogHeader>
-            {modalType === 'user' && 'ユーザー追加'}
-            {modalType === 'category' && 'カテゴリ追加'}
-            {modalType === 'unit' && '単位追加'}
+            <DialogBackdrop/>
+            <DialogPositioner>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>
+                            {modalType === 'user' && 'ユーザー追加'}
+                            {modalType === 'category' && 'カテゴリ追加'}
+                            {modalType === 'unit' && '単位追加'}
+                        </DialogTitle>
+                    </DialogHeader>
                     <DialogCloseTrigger/>
-                </DialogHeader>
                 <DialogBody>
             {modalType === 'user' && (
                 <VStack gap={4}>
@@ -1265,7 +1285,8 @@ export const Settings: React.FC = () => {
               追加
             </Button>
                 </DialogFooter>
-            </DialogContent>
+                </DialogContent>
+            </DialogPositioner>
         </DialogRoot>
     </Box>
   );

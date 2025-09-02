@@ -325,7 +325,7 @@ export const Orders: React.FC = () => {
             </Box>
       </SimpleGrid>
 
-        <TabsRoot colorScheme="primary">
+        <TabsRoot colorScheme="primary" defaultValue="required">
             <TabsList>
                 <TabsTrigger value="required">
             <HStack>
@@ -464,13 +464,13 @@ export const Orders: React.FC = () => {
             </TabsContent>
         </TabsRoot>
 
-        <DialogRoot open={isOpen} onOpenChange={(details) => setIsOpen(details.open)} size="xl">
+        <DialogRoot open={isOpen} onOpenChange={(details) => setIsOpen(details.open)} size="xl" modal={false}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>発注書確認</DialogTitle>
                     <DialogCloseTrigger/>
                 </DialogHeader>
-                <DialogBody>
+                <DialogBody maxHeight="60vh" overflowY="auto" px={6} py={4}>
                     <VStack align="stretch" gap={4}>
               {orderDrafts.map((draft) => {
                 const supplier = mockSuppliers.find(s => s.id === draft.supplierId);

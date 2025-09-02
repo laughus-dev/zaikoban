@@ -1,26 +1,22 @@
-import React, { useState, useMemo } from 'react';
+import React, {useMemo, useState} from 'react';
 import {
-  Box,
-  HStack,
-  IconButton,
-  Text,
-  useBreakpointValue,
-  Flex,
-  Input,
-  InputGroup,
-  Skeleton,
-  Stack,
-  Table,
-  MenuRoot,
-  MenuTrigger,
-  MenuContent,
-  MenuItem,
+    Box,
+    Flex,
+    HStack,
+    IconButton,
+    Input,
+    InputGroup,
+    MenuContent,
+    MenuItem,
+    MenuRoot,
+    MenuTrigger,
+    Skeleton,
+    Stack,
+    Table,
+    Text,
+    useBreakpointValue,
 } from '@chakra-ui/react';
-import {
-  FiChevronLeft,
-  FiChevronRight,
-  FiMoreVertical,
-} from 'react-icons/fi';
+import {FiChevronLeft, FiChevronRight, FiMoreVertical,} from 'react-icons/fi';
 
 export interface Column<T> {
   key: string;
@@ -176,43 +172,55 @@ export function DataTable<T extends { id: string }>({
         </Flex>
       )}
 
-      <Box
-        overflowX="auto"
+        <Table.ScrollArea
         borderWidth={showBorder ? 1 : 0}
         borderRadius="lg"
       >
-        <Table.Root size={isMobile ? 'sm' : 'md'}>
+            <Table.Root size={isMobile ? 'sm' : 'md'} variant="simple" striped showColumnBorder>
+                <Table.ColumnGroup>
+                    {visibleColumns.map((column) => (
+                        <Table.Column key={column.key} htmlWidth={column.width}/>
+                    ))}
+                    {actions.length > 0 && <Table.Column htmlWidth="50px"/>}
+                </Table.ColumnGroup>
           <Table.Header
             position={stickyHeader ? 'sticky' : 'relative'}
             top={0}
-            bg="white"
+            bg="gray.700"
             zIndex={1}
           >
             <Table.Row>
               {visibleColumns.map((column) => (
                 <Table.ColumnHeader
                   key={column.key}
-                  width={column.width}
-                  textAlign={column.align || 'left'}
+                  textAlign="center"
                   cursor={column.sortable && sortable ? 'pointer' : 'default'}
                   onClick={() => column.sortable && handleSort(column.key)}
+                  px={2}
+                  py={2}
+                  fontWeight="semibold"
+                  fontSize="xs"
+                  color="white"
+                  borderRightWidth="1px"
+                  borderColor="gray.600"
+                  whiteSpace="nowrap"
                   _hover={
                     column.sortable && sortable
-                      ? { bg: 'gray.50' }
+                        ? {bg: 'gray.600'}
                       : undefined
                   }
                 >
-                  <HStack gap={1}>
+                    <HStack gap={1} justify="center">
                     <Text>{column.label}</Text>
                     {column.sortable && sortable && sortKey === column.key && (
-                      <Text fontSize="xs">
+                        <Text fontSize="xs" color="yellow.300">
                         {sortDirection === 'asc' ? '▲' : '▼'}
                       </Text>
                     )}
                   </HStack>
                 </Table.ColumnHeader>
               ))}
-              {actions.length > 0 && <Table.ColumnHeader width="50px" />}
+                {actions.length > 0 && <Table.ColumnHeader px={1}/>}
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -239,12 +247,31 @@ export function DataTable<T extends { id: string }>({
                     <Table.Cell
                       key={column.key}
                       textAlign={column.align || 'left'}
+                      px={2}
+                      py={2}
+                      borderRightWidth="1px"
+                      borderBottomWidth="1px"
+                      borderColor="gray.200"
+                      fontSize="sm"
+                      maxWidth={column.width || '200px'}
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      whiteSpace="nowrap"
+                      title={typeof column.accessor(item) === 'string' ? String(column.accessor(item)) : undefined}
+                      _hover={{
+                          whiteSpace: 'normal',
+                          overflow: 'visible',
+                          position: 'relative',
+                          zIndex: 1,
+                          bg: 'white',
+                          boxShadow: 'sm'
+                      }}
                     >
                       {column.accessor(item)}
                     </Table.Cell>
                   ))}
                   {actions.length > 0 && (
-                    <Table.Cell>
+                      <Table.Cell px={1} py={1} borderBottomWidth="1px" borderColor="gray.100">
                       <MenuRoot>
                         <MenuTrigger asChild>
                           <IconButton
@@ -281,7 +308,7 @@ export function DataTable<T extends { id: string }>({
             )}
           </Table.Body>
         </Table.Root>
-      </Box>
+        </Table.ScrollArea>
 
       {paginated && totalPages > 1 && (
         <Flex justify="space-between" align="center" mt={4}>

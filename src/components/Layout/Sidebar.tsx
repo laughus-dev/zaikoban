@@ -1,5 +1,16 @@
 import React from 'react';
-import {Box, Flex, HStack, Icon, IconButton, Text, useBreakpointValue, useDisclosure, VStack,} from '@chakra-ui/react';
+import {
+    Box,
+    Flex,
+    HStack,
+    Icon,
+    IconButton,
+    Image,
+    Text,
+    useBreakpointValue,
+    useDisclosure,
+    VStack
+} from '@chakra-ui/react';
 import {Drawer} from '@chakra-ui/react/drawer';
 import {Link, useLocation} from 'react-router-dom';
 import {
@@ -70,19 +81,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <VStack gap={0} align="stretch" h="full">
         <Box p={6}>
             <HStack gap={3}>
-            <Box
-              bg="brand.500"
-              color="white"
-              borderRadius="lg"
-              p={2}
-              fontSize="xl"
-              fontWeight="bold"
-            >
-              在
-            </Box>
+                <Image
+                    src="/zaikoban.svg"
+                    alt="Zaikoban Logo"
+                    boxSize="40px"
+                />
             <Box>
               <Text fontSize="xl" fontWeight="bold" color="brand.500">
-                在庫番
+                  Zaikoban
               </Text>
               <Text fontSize="xs" color="gray.500">
                 飲食店向け在庫管理

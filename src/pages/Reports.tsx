@@ -256,7 +256,7 @@ export const Reports: React.FC = () => {
         </SimpleGrid>
 
         {/* メインコンテンツ */}
-            <TabsRoot colorScheme="orange" variant="enclosed">
+            <TabsRoot colorScheme="orange" variant="enclosed" defaultValue="sales">
                 <TabsList>
                     <TabsTrigger value="sales"><Icon as={FiTrendingUp} mr={2}/>売上分析</TabsTrigger>
                     <TabsTrigger value="inventory"><Icon as={FiPackage} mr={2}/>在庫分析</TabsTrigger>

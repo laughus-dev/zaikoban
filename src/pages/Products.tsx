@@ -4,26 +4,30 @@ import {
     Box,
     Button,
     createToaster,
+    DialogBackdrop,
     DialogBody,
     DialogCloseTrigger,
     DialogContent,
     DialogFooter,
     DialogHeader,
+    DialogPositioner,
     DialogRoot,
     DialogTitle,
+    FieldLabel,
+    FieldRoot,
     Flex,
     Heading,
     HStack,
-    Image,
     Input,
+    NativeSelectField,
+    NativeSelectRoot,
     SimpleGrid,
     Text,
     VStack
 } from '@chakra-ui/react';
-import {FiCode, FiDownload, FiEdit, FiPlus, FiSearch, FiTrash2, FiUpload,} from 'react-icons/fi';
+import {FiDownload, FiEdit, FiPlus, FiSearch, FiTrash2, FiUpload,} from 'react-icons/fi';
 import type {Column} from '../components/common/DataTable';
 import {DataTable} from '../components/common/DataTable';
-import {FormField} from '../components/common/FormField';
 import type {Product} from '../types';
 import {mockCategories, mockProducts, mockSuppliers} from '../data/mockData';
 import {formatCurrency, formatQuantity} from '../utils/formatters';
@@ -54,41 +58,16 @@ export const Products: React.FC = () => {
 
   const columns: Column<Product>[] = [
     {
-      key: 'image',
-      label: '',
-      accessor: (item) => (
-        <Image
-          src={item.imageUrl || 'https://via.placeholder.com/50'}
-          alt={item.name}
-          boxSize="40px"
-          objectFit="cover"
-          borderRadius="md"
-        />
-      ),
-      width: '60px',
-    },
-    {
-      key: 'code',
-      label: '商品コード',
+        key: 'name',
+        label: '商品名',
       accessor: (item) => (
           <VStack align="start" gap={0}>
-          <Text fontWeight="medium">{item.code}</Text>
-          {item.barcode && (
-              <HStack gap={1}>
-                  <FiCode size={12}/>
+              <Text fontWeight="medium">{item.name}</Text>
               <Text fontSize="xs" color="gray.500">
-                {item.barcode}
+                  {item.code}
               </Text>
-            </HStack>
-          )}
         </VStack>
       ),
-      sortable: true,
-    },
-    {
-      key: 'name',
-      label: '商品名',
-      accessor: (item) => item.name,
       sortable: true,
     },
     {
@@ -97,7 +76,7 @@ export const Products: React.FC = () => {
       accessor: (item) => {
         const category = mockCategories.find(c => c.id === item.categoryId);
         return category ? (
-          <Badge colorScheme="blue">{category.name}</Badge>
+            <Badge colorScheme="gray">{category.name}</Badge>
         ) : (
           '-'
         );
@@ -105,22 +84,24 @@ export const Products: React.FC = () => {
       sortable: true,
     },
     {
-      key: 'supplier',
-      label: '仕入先',
-      accessor: (item) => {
-        const supplier = mockSuppliers.find(s => s.id === item.supplierId);
-        return supplier ? supplier.name : '-';
-      },
+        key: 'currentStock',
+        label: '在庫数',
+        accessor: (item) => (
+            <VStack align="end" gap={0}>
+                <Text fontWeight="medium">
+                    {formatQuantity(item.currentStock, item.unit)}
+                </Text>
+                <Text fontSize="xs" color="gray.500">
+                    発注点: {item.minStock} {item.unit}
+                </Text>
+            </VStack>
+        ),
+        align: 'right',
       sortable: true,
     },
     {
-      key: 'unit',
-      label: '単位',
-      accessor: (item) => item.unit,
-    },
-    {
       key: 'cost',
-      label: '仕入値',
+        label: '仕入価格',
       accessor: (item) => formatCurrency(item.cost),
       align: 'right',
       sortable: true,
@@ -133,17 +114,12 @@ export const Products: React.FC = () => {
       sortable: true,
     },
     {
-      key: 'stock',
-      label: '在庫',
-      accessor: (item) => (
-          <VStack align="end" gap={0}>
-          <Text>{formatQuantity(item.currentStock, item.unit)}</Text>
-          <Text fontSize="xs" color="gray.500">
-            {formatQuantity(item.minStock, item.unit)} - {formatQuantity(item.maxStock, item.unit)}
-          </Text>
-        </VStack>
-      ),
-      align: 'right',
+        key: 'supplier',
+        label: '仕入先',
+        accessor: (item) => {
+            const supplier = mockSuppliers.find(s => s.id === item.supplierId);
+            return supplier ? supplier.name : '-';
+        },
     },
   ];
 
@@ -151,16 +127,16 @@ export const Products: React.FC = () => {
     setIsAddMode(true);
     setFormData({
       name: '',
-      code: '',
+        code: `P${Date.now().toString().slice(-6)}`, // 自動生成
       barcode: '',
-      categoryId: '',
+        categoryId: mockCategories[0]?.id || '', // デフォルトで最初のカテゴリを選択
       unit: 'kg',
-      cost: 0,
-      price: 0,
-      minStock: 0,
-      maxStock: 0,
-      currentStock: 0,
-      supplierId: '',
+        cost: 1000,
+        price: 1500,
+        minStock: 10,
+        maxStock: 100,
+        currentStock: 50,
+        supplierId: mockSuppliers[0]?.id || '', // デフォルトで最初の仕入先を選択
     });
       setIsOpen(true);
   };
@@ -183,19 +159,57 @@ export const Products: React.FC = () => {
   };
 
   const handleSave = () => {
+      // 必須項目の簡単なチェック
+      if (!formData.name) {
+          toast.create({
+              title: '商品名を入力してください',
+              status: 'error',
+              duration: 3000,
+          });
+          return;
+      }
+    
     if (isAddMode) {
+        // カテゴリと仕入先の名前を取得
+        const category = mockCategories.find(c => c.id === formData.categoryId);
+        const supplier = mockSuppliers.find(s => s.id === formData.supplierId);
+      
       const newProduct: Product = {
-        ...formData as Product,
         id: `product-${Date.now()}`,
+          name: formData.name || '',
+          code: formData.code || '',
+          barcode: formData.barcode || '',
+          categoryId: formData.categoryId || '',
+          categoryName: category?.name || '',
+          unit: formData.unit || 'kg',
+          cost: formData.cost || 0,
+          price: formData.price || 0,
+          minStock: formData.minStock || 0,
+          maxStock: formData.maxStock || 0,
+          currentStock: formData.currentStock || 0,
+          supplierId: formData.supplierId || '',
+          supplierName: supplier?.name || '',
+          imageUrl: '',
+          status: 'normal',
       };
       setProducts([...products, newProduct]);
         toast.create({
         title: '商品を追加しました',
+            status: 'success',
         duration: 3000,
       });
     } else if (selectedProduct) {
-      setProducts(products.map(p => 
-        p.id === selectedProduct.id ? { ...p, ...formData } : p
+        // カテゴリと仕入先の名前を取得
+        const category = mockCategories.find(c => c.id === formData.categoryId);
+        const supplier = mockSuppliers.find(s => s.id === formData.supplierId);
+      
+      setProducts(products.map(p =>
+          p.id === selectedProduct.id ? {
+              ...p,
+              ...formData,
+              categoryName: category?.name || p.categoryName,
+              supplierName: supplier?.name || p.supplierName,
+          } : p
       ));
         toast.create({
         title: '商品を更新しました',
@@ -272,19 +286,28 @@ export const Products: React.FC = () => {
             variant="outline"
             onClick={handleImportCSV}
           >
-              <FiUpload/> インポート
+              <HStack gap={1}>
+                  <FiUpload/>
+                  <Text>インポート</Text>
+              </HStack>
           </Button>
           <Button
             variant="outline"
             onClick={handleExportCSV}
           >
-              <FiDownload/> エクスポート
+              <HStack gap={1}>
+                  <FiDownload/>
+                  <Text>エクスポート</Text>
+              </HStack>
           </Button>
           <Button
-            colorScheme="primary"
+              colorScheme="brand"
             onClick={handleAdd}
           >
-              <FiPlus/> 新規登録
+              <HStack gap={1}>
+                  <FiPlus/>
+                  <Text>新規登録</Text>
+              </HStack>
           </Button>
         </HStack>
       </Flex>
@@ -322,120 +345,151 @@ export const Products: React.FC = () => {
       </Box>
 
         <DialogRoot open={isOpen} onOpenChange={(details) => setIsOpen(details.open)} size="xl">
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>
-                        {isAddMode ? '商品登録' : '商品編集'}
-                    </DialogTitle>
+            <DialogBackdrop/>
+            <DialogPositioner>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>
+                            {isAddMode ? '商品登録' : '商品編集'}
+                        </DialogTitle>
+                    </DialogHeader>
                     <DialogCloseTrigger/>
-                </DialogHeader>
                 <DialogBody>
                     <SimpleGrid columns={{base: 1, md: 2}} gap={4}>
-              <FormField
-                label="商品コード"
-                name="code"
-                value={formData.code || ''}
-                onChange={(value) => setFormData({...formData, code: String(value)})}
-                isRequired
-                placeholder="例: P001"
-              />
-              <FormField
-                label="バーコード"
-                name="barcode"
-                value={formData.barcode || ''}
-                onChange={(value) => setFormData({...formData, barcode: String(value)})}
-                placeholder="JANコード等"
-                rightIcon={<FiCode/>}
-              />
-              <FormField
-                label="商品名"
-                name="name"
-                value={formData.name || ''}
-                onChange={(value) => setFormData({...formData, name: String(value)})}
-                isRequired
-                placeholder="例: 国産牛ロース"
-              />
-              <FormField
-                type="select"
-                label="カテゴリ"
-                name="categoryId"
-                value={formData.categoryId || ''}
-                onChange={(value) => setFormData({...formData, categoryId: String(value)})}
-                options={categoryOptions}
-                isRequired
-              />
-              <FormField
-                type="select"
-                label="仕入先"
-                name="supplierId"
-                value={formData.supplierId || ''}
-                onChange={(value) => setFormData({...formData, supplierId: String(value)})}
-                options={supplierOptions}
-              />
-              <FormField
-                type="select"
-                label="単位"
-                name="unit"
-                value={formData.unit || ''}
-                onChange={(value) => setFormData({...formData, unit: String(value)})}
-                options={unitOptions}
-                isRequired
-              />
-              <FormField
-                type="number"
-                label="仕入値"
-                name="cost"
-                value={String(formData.cost || 0)}
-                onChange={(value) => setFormData({...formData, cost: Number(value) || 0})}
-                min={0}
-                isRequired
-              />
-              <FormField
-                type="number"
-                label="販売価格"
-                name="price"
-                value={String(formData.price || 0)}
-                onChange={(value) => setFormData({...formData, price: Number(value) || 0})}
-                min={0}
-                isRequired
-              />
-              <FormField
-                type="number"
-                label="最小在庫"
-                name="minStock"
-                value={String(formData.minStock || 0)}
-                onChange={(value) => setFormData({...formData, minStock: Number(value) || 0})}
-                min={0}
-                helperText="この値を下回ると発注アラート"
-              />
-              <FormField
-                type="number"
-                label="最大在庫"
-                name="maxStock"
-                value={String(formData.maxStock || 0)}
-                onChange={(value) => setFormData({...formData, maxStock: Number(value) || 0})}
-                min={0}
-                helperText="発注時の上限値"
-              />
-              <FormField
-                type="number"
-                label="現在庫"
-                name="currentStock"
-                value={String(formData.currentStock || 0)}
-                onChange={(value) => setFormData({...formData, currentStock: Number(value) || 0})}
-                min={0}
-              />
-            </SimpleGrid>
+                        <FieldRoot>
+                            <FieldLabel>商品コード</FieldLabel>
+                            <Input
+                                value={formData.code || ''}
+                                onChange={(e) => setFormData({...formData, code: e.target.value})}
+                                placeholder="例: P001"
+                            />
+                        </FieldRoot>
+
+                        <FieldRoot>
+                            <FieldLabel>バーコード</FieldLabel>
+                            <Input
+                                value={formData.barcode || ''}
+                                onChange={(e) => setFormData({...formData, barcode: e.target.value})}
+                                placeholder="JANコード等"
+                            />
+                        </FieldRoot>
+
+                        <FieldRoot>
+                            <FieldLabel>商品名 <Text as="span" color="red.500">*</Text></FieldLabel>
+                            <Input
+                                value={formData.name || ''}
+                                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                placeholder="例: 国産牛ロース"
+                            />
+                        </FieldRoot>
+
+                        <FieldRoot>
+                            <FieldLabel>カテゴリ</FieldLabel>
+                            <NativeSelectRoot>
+                                <NativeSelectField
+                                    value={formData.categoryId || ''}
+                                    onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
+                                >
+                                    <option value="">選択してください</option>
+                                    {categoryOptions.map(opt => (
+                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    ))}
+                                </NativeSelectField>
+                            </NativeSelectRoot>
+                        </FieldRoot>
+
+                        <FieldRoot>
+                            <FieldLabel>仕入先</FieldLabel>
+                            <NativeSelectRoot>
+                                <NativeSelectField
+                                    value={formData.supplierId || ''}
+                                    onChange={(e) => setFormData({...formData, supplierId: e.target.value})}
+                                >
+                                    <option value="">選択してください</option>
+                                    {supplierOptions.map(opt => (
+                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    ))}
+                                </NativeSelectField>
+                            </NativeSelectRoot>
+                        </FieldRoot>
+
+                        <FieldRoot>
+                            <FieldLabel>単位</FieldLabel>
+                            <NativeSelectRoot>
+                                <NativeSelectField
+                                    value={formData.unit || ''}
+                                    onChange={(e) => setFormData({...formData, unit: e.target.value})}
+                                >
+                                    {unitOptions.map(opt => (
+                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    ))}
+                                </NativeSelectField>
+                            </NativeSelectRoot>
+                        </FieldRoot>
+
+                        <FieldRoot>
+                            <FieldLabel>仕入値</FieldLabel>
+                            <Input
+                                type="number"
+                                value={formData.cost || 0}
+                                onChange={(e) => setFormData({...formData, cost: Number(e.target.value) || 0})}
+                                min={0}
+                            />
+                        </FieldRoot>
+
+                        <FieldRoot>
+                            <FieldLabel>販売価格</FieldLabel>
+                            <Input
+                                type="number"
+                                value={formData.price || 0}
+                                onChange={(e) => setFormData({...formData, price: Number(e.target.value) || 0})}
+                                min={0}
+                            />
+                        </FieldRoot>
+
+                        <FieldRoot>
+                            <FieldLabel>最小在庫</FieldLabel>
+                            <Input
+                                type="number"
+                                value={formData.minStock || 0}
+                                onChange={(e) => setFormData({...formData, minStock: Number(e.target.value) || 0})}
+                                min={0}
+                            />
+                            <Text fontSize="sm" color="gray.600" mt={1}>この値を下回ると発注アラート</Text>
+                        </FieldRoot>
+
+                        <FieldRoot>
+                            <FieldLabel>最大在庫</FieldLabel>
+                            <Input
+                                type="number"
+                                value={formData.maxStock || 0}
+                                onChange={(e) => setFormData({...formData, maxStock: Number(e.target.value) || 0})}
+                                min={0}
+                            />
+                            <Text fontSize="sm" color="gray.600" mt={1}>発注時の上限値</Text>
+                        </FieldRoot>
+
+                        <FieldRoot>
+                            <FieldLabel>現在庫</FieldLabel>
+                            <Input
+                                type="number"
+                                value={formData.currentStock || 0}
+                                onChange={(e) => setFormData({...formData, currentStock: Number(e.target.value) || 0})}
+                                min={0}
+                            />
+                        </FieldRoot>
+                    </SimpleGrid>
                 </DialogBody>
                 <DialogFooter>
                     <Button variant="ghost" mr={3} onClick={() => setIsOpen(false)}>
               キャンセル
             </Button>
-            <Button colorScheme="primary" onClick={handleSave}>
+                    <Button colorScheme="brand" onClick={handleSave}>
               保存
             </Button>
                 </DialogFooter>
-            </DialogContent>
+                </DialogContent>
+            </DialogPositioner>
         </DialogRoot>
     </Box>
   );
