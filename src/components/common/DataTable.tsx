@@ -186,7 +186,7 @@ export function DataTable<T extends { id: string }>({
           <Table.Header
             position={stickyHeader ? 'sticky' : 'relative'}
             top={0}
-            bg="gray.800"
+            bg="gray.100"
             zIndex={1}
           >
             <Table.Row>
@@ -200,20 +200,20 @@ export function DataTable<T extends { id: string }>({
                   py={2}
                   fontWeight="semibold"
                   fontSize="xs"
-                  color="white"
+                  color="gray.700"
                   borderRightWidth="1px"
-                  borderColor="gray.700"
+                  borderColor="gray.300"
                   whiteSpace="nowrap"
                   _hover={
                     column.sortable && sortable
-                        ? {bg: 'gray.700'}
+                        ? {bg: 'gray.200'}
                       : undefined
                   }
                 >
                     <HStack gap={1} justify="center">
-                    <Text>{column.label}</Text>
+                        <Text color="gray.700">{column.label}</Text>
                     {column.sortable && sortable && sortKey === column.key && (
-                        <Text fontSize="xs" color="orange.500">
+                        <Text fontSize="xs" color="blue.500">
                         {sortDirection === 'asc' ? '▲' : '▼'}
                       </Text>
                     )}
@@ -230,6 +230,7 @@ export function DataTable<T extends { id: string }>({
                   colSpan={visibleColumns.length + (actions.length > 0 ? 1 : 0)}
                   textAlign="center"
                   py={8}
+                  bg="white"
                   color="gray.500"
                 >
                   {emptyMessage}
@@ -241,6 +242,7 @@ export function DataTable<T extends { id: string }>({
                   key={item.id}
                   cursor={onRowClick ? 'pointer' : 'default'}
                   onClick={() => onRowClick && onRowClick(item)}
+                  bg="white"
                   _hover={{ bg: 'gray.50' }}
                 >
                   {visibleColumns.map((column) => (
@@ -252,6 +254,7 @@ export function DataTable<T extends { id: string }>({
                       borderRightWidth="1px"
                       borderBottomWidth="1px"
                       borderColor="gray.200"
+                      color="gray.800"
                       fontSize="sm"
                       maxWidth={column.width || '200px'}
                       overflow="hidden"
@@ -271,7 +274,7 @@ export function DataTable<T extends { id: string }>({
                     </Table.Cell>
                   ))}
                   {actions.length > 0 && (
-                      <Table.Cell px={1} py={1} borderBottomWidth="1px" borderColor="gray.100">
+                      <Table.Cell px={1} py={1} borderBottomWidth="1px" borderColor="gray.200" bg="white">
                       <MenuRoot>
                         <MenuTrigger asChild>
                           <IconButton
