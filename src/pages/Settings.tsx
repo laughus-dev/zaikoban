@@ -19,6 +19,7 @@ import {
     DialogHeader,
     DialogPositioner,
     DialogRoot,
+    DialogTitle,
     FieldLabel,
     FieldRoot,
     Heading,

@@ -176,7 +176,7 @@ export function DataTable<T extends { id: string }>({
         borderWidth={showBorder ? 1 : 0}
         borderRadius="lg"
       >
-            <Table.Root size={isMobile ? 'sm' : 'md'} variant="simple" striped showColumnBorder>
+            <Table.Root size={isMobile ? 'sm' : 'md'} variant="line" striped showColumnBorder>
                 <Table.ColumnGroup>
                     {visibleColumns.map((column) => (
                         <Table.Column key={column.key} htmlWidth={column.width}/>
@@ -186,7 +186,7 @@ export function DataTable<T extends { id: string }>({
           <Table.Header
             position={stickyHeader ? 'sticky' : 'relative'}
             top={0}
-            bg="gray.700"
+            bg="gray.800"
             zIndex={1}
           >
             <Table.Row>
@@ -202,18 +202,18 @@ export function DataTable<T extends { id: string }>({
                   fontSize="xs"
                   color="white"
                   borderRightWidth="1px"
-                  borderColor="gray.600"
+                  borderColor="gray.700"
                   whiteSpace="nowrap"
                   _hover={
                     column.sortable && sortable
-                        ? {bg: 'gray.600'}
+                        ? {bg: 'gray.700'}
                       : undefined
                   }
                 >
                     <HStack gap={1} justify="center">
                     <Text>{column.label}</Text>
                     {column.sortable && sortable && sortKey === column.key && (
-                        <Text fontSize="xs" color="yellow.300">
+                        <Text fontSize="xs" color="orange.500">
                         {sortDirection === 'asc' ? '▲' : '▼'}
                       </Text>
                     )}

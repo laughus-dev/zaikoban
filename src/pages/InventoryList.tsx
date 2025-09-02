@@ -13,6 +13,8 @@ import {
     DialogPositioner,
     DialogRoot,
     DialogTitle,
+    FieldLabel,
+    FieldRoot,
     Heading,
     HStack,
     Image,
@@ -27,7 +29,6 @@ import {
 } from '@chakra-ui/react';
 import {FiDownload, FiEdit, FiEye, FiPlus, FiShoppingCart, FiTrash2, FiUpload,} from 'react-icons/fi';
 import {type Column, DataTable} from '../components/common/DataTable';
-import {FormField} from '../components/common/FormField';
 import {mockCategories, mockProducts, mockSuppliers} from '../data/mockData';
 import type {Product} from '../types';
 import {formatCurrency, formatDate, formatQuantity, isExpiringSoon} from '../utils/formatters';
@@ -157,7 +158,6 @@ export const InventoryList: React.FC = () => {
         if (!formData.name) {
             toaster.create({
                 title: '商品名を入力してください',
-                status: 'error',
                 duration: 3000,
             });
             return;
@@ -188,7 +188,6 @@ export const InventoryList: React.FC = () => {
             setProducts([...products, newProduct]);
             toaster.create({
                 title: '商品を追加しました',
-                status: 'success',
                 duration: 3000,
             });
         } else if (selectedProduct) {
@@ -446,33 +445,37 @@ export const InventoryList: React.FC = () => {
                     <DialogCloseTrigger/>
                     <DialogBody>
                         <VStack gap={4}>
-                            <FormField label="商品名" required>
+                            <FieldRoot>
+                                <FieldLabel>商品名 <Text as="span" color="red.500">*</Text></FieldLabel>
                                 <Input
                                     value={formData.name || ''}
                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                                     placeholder="商品名を入力"
                                 />
-                            </FormField>
+                            </FieldRoot>
 
                             <HStack gap={4} width="100%">
-                                <FormField label="商品コード" required>
+                                <FieldRoot>
+                                    <FieldLabel>商品コード <Text as="span" color="red.500">*</Text></FieldLabel>
                                     <Input
                                         value={formData.code || ''}
                                         onChange={(e) => setFormData({...formData, code: e.target.value})}
                                         placeholder="P123456"
                                     />
-                                </FormField>
-                                <FormField label="バーコード">
+                                </FieldRoot>
+                                <FieldRoot>
+                                    <FieldLabel>バーコード</FieldLabel>
                                     <Input
                                         value={formData.barcode || ''}
                                         onChange={(e) => setFormData({...formData, barcode: e.target.value})}
                                         placeholder="4901234567890"
                                     />
-                                </FormField>
+                                </FieldRoot>
                             </HStack>
 
                             <HStack gap={4} width="100%">
-                                <FormField label="カテゴリ" required>
+                                <FieldRoot>
+                                    <FieldLabel>カテゴリ <Text as="span" color="red.500">*</Text></FieldLabel>
                                     <select
                                         value={formData.categoryId || ''}
                                         onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
@@ -487,8 +490,9 @@ export const InventoryList: React.FC = () => {
                                             <option key={cat.id} value={cat.id}>{cat.name}</option>
                                         ))}
                                     </select>
-                                </FormField>
-                                <FormField label="単位" required>
+                                </FieldRoot>
+                                <FieldRoot>
+                                    <FieldLabel>単位 <Text as="span" color="red.500">*</Text></FieldLabel>
                                     <select
                                         value={formData.unit || 'kg'}
                                         onChange={(e) => setFormData({...formData, unit: e.target.value})}
@@ -509,11 +513,12 @@ export const InventoryList: React.FC = () => {
                                         <option value="パック">パック</option>
                                         <option value="箱">箱</option>
                                     </select>
-                                </FormField>
+                                </FieldRoot>
                             </HStack>
 
                             <HStack gap={4} width="100%">
-                                <FormField label="現在庫">
+                                <FieldRoot>
+                                    <FieldLabel>現在庫</FieldLabel>
                                     <Input
                                         type="number"
                                         value={formData.currentStock || 0}
@@ -522,41 +527,46 @@ export const InventoryList: React.FC = () => {
                                             currentStock: Number(e.target.value)
                                         })}
                                     />
-                                </FormField>
-                                <FormField label="発注点">
+                                </FieldRoot>
+                                <FieldRoot>
+                                    <FieldLabel>発注点</FieldLabel>
                                     <Input
                                         type="number"
                                         value={formData.minStock || 0}
                                         onChange={(e) => setFormData({...formData, minStock: Number(e.target.value)})}
                                     />
-                                </FormField>
-                                <FormField label="最大在庫">
+                                </FieldRoot>
+                                <FieldRoot>
+                                    <FieldLabel>最大在庫</FieldLabel>
                                     <Input
                                         type="number"
                                         value={formData.maxStock || 0}
                                         onChange={(e) => setFormData({...formData, maxStock: Number(e.target.value)})}
                                     />
-                                </FormField>
+                                </FieldRoot>
                             </HStack>
 
                             <HStack gap={4} width="100%">
-                                <FormField label="原価">
+                                <FieldRoot>
+                                    <FieldLabel>原価</FieldLabel>
                                     <Input
                                         type="number"
                                         value={formData.cost || 0}
                                         onChange={(e) => setFormData({...formData, cost: Number(e.target.value)})}
                                     />
-                                </FormField>
-                                <FormField label="売価">
+                                </FieldRoot>
+                                <FieldRoot>
+                                    <FieldLabel>売価</FieldLabel>
                                     <Input
                                         type="number"
                                         value={formData.price || 0}
                                         onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
                                     />
-                                </FormField>
+                                </FieldRoot>
                             </HStack>
 
-                            <FormField label="仕入先">
+                            <FieldRoot>
+                                <FieldLabel>仕入先</FieldLabel>
                                 <select
                                     value={formData.supplierId || ''}
                                     onChange={(e) => setFormData({...formData, supplierId: e.target.value})}
@@ -571,7 +581,7 @@ export const InventoryList: React.FC = () => {
                                         <option key={sup.id} value={sup.id}>{sup.name}</option>
                                     ))}
                                 </select>
-                            </FormField>
+                            </FieldRoot>
                         </VStack>
                     </DialogBody>
                     <DialogFooter>

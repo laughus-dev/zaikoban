@@ -163,7 +163,6 @@ export const Products: React.FC = () => {
       if (!formData.name) {
           toast.create({
               title: '商品名を入力してください',
-              status: 'error',
               duration: 3000,
           });
           return;
@@ -195,7 +194,6 @@ export const Products: React.FC = () => {
       setProducts([...products, newProduct]);
         toast.create({
         title: '商品を追加しました',
-            status: 'success',
         duration: 3000,
       });
     } else if (selectedProduct) {
