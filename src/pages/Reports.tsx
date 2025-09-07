@@ -53,6 +53,7 @@ import {
     FiTarget,
     FiTrendingUp,
 } from 'react-icons/fi';
+import {usePrint} from '../hooks/usePrint';
 import {
     Bar,
     BarChart,
@@ -109,6 +110,10 @@ const turnoverRate = [
 
 export const Reports: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('month');
+    const {printRef, handlePrint} = usePrint({
+        documentTitle: 'レポート・分析',
+        pageSize: 'A4'
+    });
     const toast = createToaster({
         placement: 'top',
     });
@@ -131,7 +136,7 @@ export const Reports: React.FC = () => {
   };
 
   return (
-      <Box p={{base: 4, md: 6}} maxW="1400px" mx="auto" className="print-area">
+      <Box ref={printRef} p={{base: 4, md: 6}} maxW="1400px" mx="auto">
       {/* ヘッダー */}
         <VStack align="stretch" gap={6}>
         <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
@@ -143,7 +148,7 @@ export const Reports: React.FC = () => {
             <Text color="gray.600">売上や在庫の状況を分かりやすく表示します</Text>
           </VStack>
 
-            <HStack gap={3} className="no-print">
+            <HStack gap={3}>
                 <NativeSelectRoot w="150px">
                     <NativeSelectField bg={bgColor} value={selectedPeriod}
                                        onChange={(e) => setSelectedPeriod(e.target.value)}>
@@ -174,8 +179,7 @@ export const Reports: React.FC = () => {
                         <IconButton
                             aria-label="印刷"
                             variant="outline"
-                            onClick={() => window.print()}
-                            className="no-print"
+                            onClick={handlePrint}
                         >
                             <FiPrinter/>
                         </IconButton>
@@ -203,7 +207,7 @@ export const Reports: React.FC = () => {
         </Flex>
 
         {/* サマリーカード */}
-            <SimpleGrid columns={{base: 1, sm: 2, lg: 4}} gap={4} className="print-summary-grid">
+            <SimpleGrid columns={{base: 1, sm: 2, lg: 4}} gap={4}>
                 <Box bg={bgColor} borderWidth={1} borderColor={borderColor} p={6} borderRadius="lg">
                     <StatRoot>
                         <StatLabel color="gray.600">今月の売上</StatLabel>
@@ -267,14 +271,13 @@ export const Reports: React.FC = () => {
             {/* 売上分析タブ */}
                 <TabsContent value="sales" aria-label="売上分析">
                 <VStack gap={6} align="stretch">
-                    <Box bg={bgColor} borderWidth={1} borderColor={borderColor} borderRadius="lg"
-                         className="no-page-break">
+                    <Box bg={bgColor} borderWidth={1} borderColor={borderColor} borderRadius="lg">
                         <Box p={6} borderBottomWidth={1} borderColor={borderColor}>
                     <Heading size="md">月別売上推移</Heading>
                     <Text color="gray.600" fontSize="sm">今年と前年の比較</Text>
                         </Box>
                         <Box p={6}>
-                            <ResponsiveContainer width="100%" height={300} className="print-chart">
+                            <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={salesData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="month" />
@@ -296,7 +299,7 @@ export const Reports: React.FC = () => {
                       <Heading size="md">カテゴリ別売上構成</Heading>
                             </Box>
                             <Box p={6}>
-                                <ResponsiveContainer width="100%" height={250} className="print-chart">
+                                <ResponsiveContainer width="100%" height={250}>
                         <PieChart>
                           <Pie
                             data={categoryAnalysis}
@@ -363,7 +366,7 @@ export const Reports: React.FC = () => {
                 <VStack gap={6} align="stretch">
                     <SimpleGrid columns={{base: 1, lg: 3}} gap={6}>
                   {inventoryEfficiency.map((item) => (
-                      <CardRoot key={item.category} bg={bgColor} className="no-page-break">
+                      <CardRoot key={item.category} bg={bgColor}>
                       <CardBody>
                           <VStack gap={4}>
                           <Icon 
@@ -390,7 +393,7 @@ export const Reports: React.FC = () => {
                   ))}
                 </SimpleGrid>
 
-                    <CardRoot bg={bgColor} className="no-page-break">
+                    <CardRoot bg={bgColor}>
                   <CardHeader>
                     <Heading size="md">在庫回転率</Heading>
                     <Text color="gray.600" fontSize="sm">目標値との比較</Text>
@@ -457,7 +460,7 @@ export const Reports: React.FC = () => {
             {/* 商品ランキングタブ */}
                 <TabsContent value="ranking" aria-label="商品ランキング">
                 <VStack gap={6} align="stretch">
-                    <CardRoot bg={bgColor} className="no-page-break">
+                    <CardRoot bg={bgColor}>
                   <CardHeader>
                     <Heading size="md">売上TOP5商品</Heading>
                     <Text color="gray.600" fontSize="sm">今月の人気商品</Text>
@@ -512,7 +515,7 @@ export const Reports: React.FC = () => {
                     </CardRoot>
 
                     <SimpleGrid columns={{base: 1, lg: 2}} gap={6}>
-                        <CardRoot bg={bgColor} className="no-page-break">
+                        <CardRoot bg={bgColor}>
                     <CardHeader>
                       <Heading size="md">急上昇商品 🔥</Heading>
                     </CardHeader>
@@ -537,7 +540,7 @@ export const Reports: React.FC = () => {
                     </CardBody>
                         </CardRoot>
 
-                        <CardRoot bg={bgColor} className="no-page-break">
+                        <CardRoot bg={bgColor}>
                     <CardHeader>
                       <Heading size="md">要注意商品 ⚠️</Heading>
                     </CardHeader>

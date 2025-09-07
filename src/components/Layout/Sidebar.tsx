@@ -77,7 +77,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       left={0}
       top={0}
       overflowY="auto"
-      className="no-print"
     >
         <VStack gap={0} align="stretch" h="full">
         <Box p={6}>
@@ -198,7 +197,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           left={4}
           zIndex={20}
           colorScheme="brand"
-          className="no-print"
         />
           <Drawer.Root open={open} placement="start" onOpenChange={(details) => setOpen(details.open)}>
               <Drawer.Backdrop/>
