@@ -48,6 +48,7 @@ src/
 
 #### 1. DRY原則の適用
 - **共通コンポーネント化**: DataTable、FormField、StatCardなど再利用可能なコンポーネントを作成
+- **カスタムフック**: usePrint（印刷機能）など、共通ロジックをフック化
 - **ユーティリティ関数**: formatCurrency、formatDate等の共通処理を関数化
 - **型定義の一元管理**: types/index.tsで全エンティティの型を定義
 
@@ -70,6 +71,29 @@ export const mockProducts: Product[] = [
 ```
 
 ## 主要コンポーネント仕様
+
+### usePrint カスタムフック
+
+印刷機能を提供する共通フック。react-to-printライブラリをラップし、以下の機能を提供：
+
+- **印刷用ref**: 印刷対象の要素を指定
+- **印刷ハンドラ**: ブラウザの印刷ダイアログを起動
+- **カスタマイズ可能な設定**: ページサイズ、マージン、追加スタイル
+
+```typescript
+interface UsePrintOptions {
+  documentTitle?: string
+  pageSize?: 'A4' | 'A3' | 'Letter'
+  margin?: string
+  additionalStyles?: string
+}
+
+// 使用例
+const { printRef, handlePrint } = usePrint({
+  documentTitle: 'レポート',
+  pageSize: 'A4'
+})
+```
 
 ### DataTable コンポーネント
 汎用的なテーブルコンポーネントで、以下の機能を提供：
