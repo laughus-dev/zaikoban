@@ -131,7 +131,7 @@ export const Reports: React.FC = () => {
   };
 
   return (
-    <Box p={{ base: 4, md: 6 }} maxW="1400px" mx="auto">
+      <Box p={{base: 4, md: 6}} maxW="1400px" mx="auto" className="print-area">
       {/* ヘッダー */}
         <VStack align="stretch" gap={6}>
         <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
@@ -143,7 +143,7 @@ export const Reports: React.FC = () => {
             <Text color="gray.600">売上や在庫の状況を分かりやすく表示します</Text>
           </VStack>
 
-            <HStack gap={3}>
+            <HStack gap={3} className="no-print">
                 <NativeSelectRoot w="150px">
                     <NativeSelectField bg={bgColor} value={selectedPeriod}
                                        onChange={(e) => setSelectedPeriod(e.target.value)}>
@@ -174,7 +174,8 @@ export const Reports: React.FC = () => {
                         <IconButton
                             aria-label="印刷"
                             variant="outline"
-                            onClick={() => handleExport('印刷')}
+                            onClick={() => window.print()}
+                            className="no-print"
                         >
                             <FiPrinter/>
                         </IconButton>
@@ -202,7 +203,7 @@ export const Reports: React.FC = () => {
         </Flex>
 
         {/* サマリーカード */}
-            <SimpleGrid columns={{base: 1, sm: 2, lg: 4}} gap={4}>
+            <SimpleGrid columns={{base: 1, sm: 2, lg: 4}} gap={4} className="print-summary-grid">
                 <Box bg={bgColor} borderWidth={1} borderColor={borderColor} p={6} borderRadius="lg">
                     <StatRoot>
                         <StatLabel color="gray.600">今月の売上</StatLabel>
@@ -264,15 +265,16 @@ export const Reports: React.FC = () => {
                     <TabsTrigger value="improvement"><Icon as={FiTarget} mr={2}/>改善提案</TabsTrigger>
                 </TabsList>
             {/* 売上分析タブ */}
-                <TabsContent value="sales">
+                <TabsContent value="sales" aria-label="売上分析">
                 <VStack gap={6} align="stretch">
-                    <Box bg={bgColor} borderWidth={1} borderColor={borderColor} borderRadius="lg">
+                    <Box bg={bgColor} borderWidth={1} borderColor={borderColor} borderRadius="lg"
+                         className="no-page-break">
                         <Box p={6} borderBottomWidth={1} borderColor={borderColor}>
                     <Heading size="md">月別売上推移</Heading>
                     <Text color="gray.600" fontSize="sm">今年と前年の比較</Text>
                         </Box>
                         <Box p={6}>
-                    <ResponsiveContainer width="100%" height={300}>
+                            <ResponsiveContainer width="100%" height={300} className="print-chart">
                       <BarChart data={salesData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="month" />
@@ -294,7 +296,7 @@ export const Reports: React.FC = () => {
                       <Heading size="md">カテゴリ別売上構成</Heading>
                             </Box>
                             <Box p={6}>
-                      <ResponsiveContainer width="100%" height={250}>
+                                <ResponsiveContainer width="100%" height={250} className="print-chart">
                         <PieChart>
                           <Pie
                             data={categoryAnalysis}
@@ -357,11 +359,11 @@ export const Reports: React.FC = () => {
                 </TabsContent>
 
             {/* 在庫分析タブ */}
-                <TabsContent value="inventory">
+                <TabsContent value="inventory" aria-label="在庫分析">
                 <VStack gap={6} align="stretch">
                     <SimpleGrid columns={{base: 1, lg: 3}} gap={6}>
                   {inventoryEfficiency.map((item) => (
-                      <CardRoot key={item.category} bg={bgColor}>
+                      <CardRoot key={item.category} bg={bgColor} className="no-page-break">
                       <CardBody>
                           <VStack gap={4}>
                           <Icon 
@@ -388,7 +390,7 @@ export const Reports: React.FC = () => {
                   ))}
                 </SimpleGrid>
 
-                    <CardRoot bg={bgColor}>
+                    <CardRoot bg={bgColor} className="no-page-break">
                   <CardHeader>
                     <Heading size="md">在庫回転率</Heading>
                     <Text color="gray.600" fontSize="sm">目標値との比較</Text>
@@ -453,9 +455,9 @@ export const Reports: React.FC = () => {
                 </TabsContent>
 
             {/* 商品ランキングタブ */}
-                <TabsContent value="ranking">
+                <TabsContent value="ranking" aria-label="商品ランキング">
                 <VStack gap={6} align="stretch">
-                    <CardRoot bg={bgColor}>
+                    <CardRoot bg={bgColor} className="no-page-break">
                   <CardHeader>
                     <Heading size="md">売上TOP5商品</Heading>
                     <Text color="gray.600" fontSize="sm">今月の人気商品</Text>
@@ -510,7 +512,7 @@ export const Reports: React.FC = () => {
                     </CardRoot>
 
                     <SimpleGrid columns={{base: 1, lg: 2}} gap={6}>
-                        <CardRoot bg={bgColor}>
+                        <CardRoot bg={bgColor} className="no-page-break">
                     <CardHeader>
                       <Heading size="md">急上昇商品 🔥</Heading>
                     </CardHeader>
@@ -535,7 +537,7 @@ export const Reports: React.FC = () => {
                     </CardBody>
                         </CardRoot>
 
-                        <CardRoot bg={bgColor}>
+                        <CardRoot bg={bgColor} className="no-page-break">
                     <CardHeader>
                       <Heading size="md">要注意商品 ⚠️</Heading>
                     </CardHeader>
@@ -561,7 +563,7 @@ export const Reports: React.FC = () => {
                 </TabsContent>
 
             {/* 改善提案タブ */}
-                <TabsContent value="improvement">
+                <TabsContent value="improvement" aria-label="改善提案">
                 <VStack gap={6} align="stretch">
                     <AlertRoot status="success" borderRadius="lg">
                   <Box>
