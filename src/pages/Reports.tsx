@@ -325,9 +325,9 @@ export const Reports: React.FC = () => {
                         <Box>
                           <Flex justify="space-between" mb={2}>
                             <Text fontWeight="bold">今月</Text>
-                            <Text color="green.500" fontWeight="bold">105%</Text>
+                              <Text color="green.500" fontWeight="bold">100%</Text>
                           </Flex>
-                            <ProgressRoot value={105} colorPalette="green" size="lg">
+                            <ProgressRoot value={100} max={100} colorPalette="green" size="lg">
                                 <ProgressValueText/>
                             </ProgressRoot>
                         </Box>
@@ -396,7 +396,7 @@ export const Reports: React.FC = () => {
                   <CardBody>
                       <HStack gap={8} justify="center">
                       <VStack>
-                        <Box position="relative" width="150px" height="150px">
+                          <Box position="relative" width="150px" height="150px" minWidth="150px" minHeight="150px">
                           <ResponsiveContainer width="100%" height="100%">
                             <RadialBarChart 
                               cx="50%" 

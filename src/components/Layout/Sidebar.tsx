@@ -66,12 +66,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const activeColor = 'brand.600';
   const hoverBg = 'gray.50';
 
-  const SidebarContent = () => (
+    const SidebarContent = ({onClose}: { onClose?: () => void }) => (
     <Box
       bg={bg}
       borderRight="1px"
       borderColor={borderColor}
-      w={{ base: 'full', lg: '280px' }}
+      w={{base: '250px', lg: '280px'}}
       h="full"
       position="fixed"
       left={0}
@@ -103,7 +103,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {sidebarItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
-              <Link key={item.path} to={item.path}>
+                <Link key={item.path} to={item.path} onClick={onClose}>
                 <Flex
                   align="center"
                   p={3}
@@ -166,7 +166,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </Text>
             </Box>
           </HStack>
-          <Link to={ROUTES.LOGIN}>
+            <Link to={ROUTES.LOGIN} onClick={onClose}>
             <Flex
               align="center"
               p={3}
@@ -206,7 +206,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           <Drawer.CloseTrigger/>
                       </Drawer.Header>
                       <Drawer.Body p={0}>
-                          <SidebarContent/>
+                          <SidebarContent onClose={() => setOpen(false)}/>
                       </Drawer.Body>
                   </Drawer.Content>
               </Drawer.Positioner>

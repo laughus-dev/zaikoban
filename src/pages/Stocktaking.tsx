@@ -197,7 +197,9 @@ export const Stocktaking: React.FC = () => {
     },
   ];
 
-  const progress = (completedCount / mockProducts.length) * 100;
+    const progress = stocktakingItems.length > 0
+        ? (completedCount / stocktakingItems.length) * 100
+        : 0;
 
   return (
     <Box p={6}>
@@ -254,7 +256,7 @@ export const Stocktaking: React.FC = () => {
               </Box>
           </SimpleGrid>
 
-          <Progress.Root value={progress} colorPalette="blue" mb={6}>
+            <Progress.Root value={Math.min(Math.max(0, progress), 100)} max={100} colorPalette="blue" mb={6}>
             <Progress.Track>
               <Progress.Range />
             </Progress.Track>
