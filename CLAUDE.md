@@ -4,7 +4,7 @@
 
 ## 重要ドキュメント参照
 
-- 📋 **要件定義書**: `C:\Users\mskta\OneDrive\デスクトップ\inventory-app-requirements.md`
+- 📋 **要件定義書**: `./inventory-app-requirements.md`
 - 📖 **技術仕様書**: `TECHNICAL_DOCUMENTATION.md`
 - 📦 **package.json**: 現在の技術スタック確認用
 
