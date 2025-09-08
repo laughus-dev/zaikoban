@@ -3,7 +3,7 @@ export const APP_DESCRIPTION = '飲食店向け在庫管理システム';
 
 export const ROUTES = {
   LOGIN: '/login',
-  DASHBOARD: '/',
+  DASHBOARD: '/dashboard',
   INVENTORY: '/inventory',
   PRODUCTS: '/products',
   STOCK_IN_OUT: '/stock-movement',

@@ -113,7 +113,7 @@ function App() {
               </AppLayout>
             }
           />
-          <Route path="/" element={<Navigate to={ROUTES.LOGIN} replace />} />
+          <Route path="/" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
           </Routes>
         </Suspense>
       </Router>
