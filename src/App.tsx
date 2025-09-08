@@ -1,20 +1,19 @@
-import React, { lazy, Suspense } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ChakraProvider, createSystem, defaultConfig, Box, Flex, Spinner } from '@chakra-ui/react';
-import { ROUTES } from './config/constants';
+import React, {lazy, Suspense} from 'react';
+import {HashRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
+import {Box, ChakraProvider, createSystem, defaultConfig, Flex, Spinner} from '@chakra-ui/react';
+import {ROUTES} from './config/constants';
 
-import { Sidebar } from './components/Layout/Sidebar';
+import {Sidebar} from './components/Layout/Sidebar';
+import {Dashboard} from './pages/Dashboard';
+import {InventoryList} from './pages/InventoryList';
+import {Products} from './pages/Products';
+import {StockInOut} from './pages/StockInOut';
+import {Stocktaking} from './pages/Stocktaking';
+import {Orders} from './pages/Orders';
+import {Reports} from './pages/Reports';
+import {Settings} from './pages/Settings';
 // Lazy load the Login page
 const Login = lazy(() => import('./pages/Login').then(module => ({ default: module.Login })));
-import { Dashboard } from './pages/Dashboard';
-import { InventoryList } from './pages/InventoryList';
-import { Products } from './pages/Products';
-import { StockInOut } from './pages/StockInOut';
-import { Stocktaking } from './pages/Stocktaking';
-import { Orders } from './pages/Orders';
-import { Reports } from './pages/Reports';
-import { Settings } from './pages/Settings';
-
 
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -114,6 +113,7 @@ function App() {
             }
           />
           <Route path="/" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+              <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace/>}/>
           </Routes>
         </Suspense>
       </Router>
