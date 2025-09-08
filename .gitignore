@@ -216,3 +216,4 @@ typedoc/
 !README.md
 !HANDOVER_DOCUMENT.md
 !TECHNICAL_DOCUMENTATION.md
+scripts/*.ps1
