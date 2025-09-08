@@ -45,7 +45,7 @@ const PageLoader: React.FC = () => (
 function App() {
   return (
     <ChakraProvider value={system}>
-      <Router>
+3      <Router basename="/zaikoban">
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path={ROUTES.LOGIN} element={<Login />} />

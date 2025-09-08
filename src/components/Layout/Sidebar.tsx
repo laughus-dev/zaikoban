@@ -82,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <Box p={6}>
             <HStack gap={3}>
                 <Image
-                    src="/zaikoban.svg"
+                    src="/zaikoban/zaikoban.svg"
                     alt="Zaikoban Logo"
                     boxSize="40px"
                 />
