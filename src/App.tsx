@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ChakraProvider, createSystem, defaultConfig, Box, Flex, Spinner } from '@chakra-ui/react';
 import { ROUTES } from './config/constants';
 
@@ -45,7 +45,7 @@ const PageLoader: React.FC = () => (
 function App() {
   return (
     <ChakraProvider value={system}>
-3      <Router basename="/zaikoban">
+3      <Router>
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path={ROUTES.LOGIN} element={<Login />} />
