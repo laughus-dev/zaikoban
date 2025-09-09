@@ -1,0 +1,31 @@
+{
+  "name": "在庫番 - Zaikoban",
+  "short_name": "Zaikoban",
+  "description": "飲食店向け在庫管理システム",
+  "theme_color": "#319795",
+  "background_color": "#1a202c",
+  "display": "standalone",
+  "orientation": "any",
+  "scope": "/zaikoban/",
+  "start_url": "/zaikoban/",
+  "icons": [
+    {
+      "src": "/zaikoban/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/zaikoban/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/zaikoban/zaikoban.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
